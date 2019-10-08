@@ -12,7 +12,7 @@ public class Clause {
     public String toString() {
         String rep = "";
         for (int i = 0; i < clauseArray.length; i++) {
-            rep +=  clauseArray[i];
+            rep +=  clauseArray[i] + " ";
         }
         return rep;
     }
