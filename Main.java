@@ -7,8 +7,10 @@ import java.io.Reader;
 public class Main {
     
     public static void readFile(String filename) {
-        String line = null;
+        String clauseLine = null;
         Clause clause;
+        int literals;
+        int totalClauses;
 
         try {
             File initialFile = new File(filename);
@@ -17,13 +19,11 @@ public class Main {
             Reader reader = new FileReader(initialFile);
             
             BufferedReader buffReader = new BufferedReader(reader);
-
-            while ((line = buffReader.readLine()) != null) {
-                // System.out.println(line);
-                clause = new Clause(line);
+            
+            while ((clauseLine = buffReader.readLine()) != null) {
+                clause = new Clause(clauseLine);
                 System.out.println(clause.toString());
             }
-            
         } catch (IOException e) {
             System.out.println("IO Exception");
         }
