@@ -2,13 +2,15 @@ import java.util.Random;
 
 public class Individual {
 
-    public ClauseList problemInfo;
+    // public ClauseList problemInfo;
+
+    public int individualNum;
 
     public int[] individual;
     
-    public Individual(ClauseList problemInfo) {
-        this.problemInfo = problemInfo;
-        individual = new int[this.problemInfo.getVariableNum() + 1];
+    public Individual(int individualNum) {
+        this.individualNum = individualNum;
+        individual = new int[individualNum+ 1];
     }
 
     // given the individual, we will then loop through with even probability on each iteration and place either
@@ -16,7 +18,7 @@ public class Individual {
     // indexing in the following way: 1 = 1, 2 = 2, etc. ignoring the zero index slot
     public Individual generateIndividual() {
         Random rand = new Random();
-        Individual randIndividual = new Individual(problemInfo);
+        Individual randIndividual = new Individual(this.individualNum);
         for (int i = 1; i < individual.length; i++) {
             randIndividual.setValue(i, rand.nextInt(2));
         }
@@ -44,7 +46,6 @@ public class Individual {
         for (int i = 1; i < individual.length; i++) {
             representation += individual[i];
         }
-        System.out.println(individual.length);
         return representation;
     }
 }

@@ -38,16 +38,20 @@ public class Main {
                 }
                 
             }
+            buffReader.close();
         } catch (IOException e) {
             System.out.println("IO Exception");
         }
 
         ClauseList clausePackage = new ClauseList(clauseList, totalClauses, variables);
-        Individual individual = new Individual(clausePackage);
+        Individual individual = new Individual(clausePackage.getVariableNum());
+        Population population = new Population(50);
 
-        System.out.println(individual.generateIndividual());
-        System.out.println("Individual size " + individual.size());
-        System.out.println(clausePackage.toString());
+        // System.out.println("Individual size " + individual.size());
+        // System.out.println("Individual " + individual.generateIndividual());
+        // System.out.println(clausePackage.toString());
+        System.out.println(population.generateRandomPopulation(clausePackage.getVariableNum()));
+        
     }
 
     public static void main(String[] args) {

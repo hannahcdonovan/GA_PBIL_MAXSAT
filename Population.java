@@ -3,17 +3,22 @@ import java.util.List;
 
 public class Population {
 
-    List<Individual> popList = ArrayList<Individual>();
-    int populationNum;
+    public List<Individual> popList;
+    public int populationNum;
     
-    public Population(int individualNum) {
-        this.populationNum = individualNum;
+    public Population(int populationNum) {
+        this.populationNum = populationNum;
+        popList = new ArrayList<Individual>();
     }
 
     //populates list with Individuals randmly
     //called to start GA 
-    public void generateRandomPopulation(int variables) {
-
+    public List generateRandomPopulation(int variableNum) {
+        Individual individual = new Individual(variableNum);
+        for (int i = 0; i < this.populationNum; i++) {
+            popList.add(individual.generateIndividual());
+        }
+        return popList;
     }
 
     //popualtes list of Inviduals according to pbil vector probabilties 
@@ -21,7 +26,5 @@ public class Population {
     public void generateRandomVectorPopulation(int variables, int[] pbilVec) {
 
     }
-
-
 
 }
