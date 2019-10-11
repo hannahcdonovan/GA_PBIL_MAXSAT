@@ -14,7 +14,7 @@ public class Individual {
 
     }
 
-    public int fitness(String clause) {
+    public int fitness(ClauseList clause) {
 
     }
 }
