@@ -35,8 +35,6 @@ public class Main {
                 } else {
                     clause = new Clause(clauseLine);
                     clauseList.add(clause);
-
-                    //System.out.println(clause.toString());
                 }
                 
             }
@@ -45,7 +43,10 @@ public class Main {
         }
 
         ClauseList clausePackage = new ClauseList(clauseList, totalClauses, variables);
+        Individual individual = new Individual(clausePackage);
 
+        System.out.println(individual.generateIndividual());
+        System.out.println("Individual size " + individual.size());
         System.out.println(clausePackage.toString());
     }
 
