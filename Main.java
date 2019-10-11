@@ -46,7 +46,7 @@ public class Main {
 
         ClauseList clausePackage = new ClauseList(clauseList, totalClauses, variables);
 
-        System.out.println(clauseList);
+        System.out.println(clausePackage.toString());
     }
 
     public static void main(String[] args) {

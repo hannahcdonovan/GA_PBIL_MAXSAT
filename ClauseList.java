@@ -5,12 +5,28 @@ import java.util.ArrayList;
 public class ClauseList {
 
     public List<Clause> clauseList;
-    public int clauses;
-    public int variables;
+    public int clauseNum;
+    public int variableNum;
 
-    public ClauseList(List<Clause> clauseList, int clauseNum, int variables) {
+    public ClauseList(List<Clause> clauseList, int clauseNum, int variableNum) {
         this.clauseList = clauseList;
-        this.clauses = clauses;
-        this.variables = variables;
+        this.clauseNum = clauseNum;
+        this.variableNum = variableNum;
+    }
+
+    public int getClauseNum() {
+        return this.clauseNum;
+    }
+
+    public int getVariableNum() {
+        return this.variableNum;
+    }
+
+    public String toString() {
+        String stringRep = " ";
+        for (int i = 0; i < this.clauseList.size(); i++) {
+            stringRep += this.clauseList.get(i) + " | ";
+        }
+        return stringRep;
     }
 }
