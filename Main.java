@@ -11,8 +11,8 @@ public class Main {
     public static void readFile(String filename) {
         String clauseLine = null;
         Clause clause;
-        int variables;
-        int totalClauses;
+        int variables = 0;
+        int totalClauses = 0;
         List<Clause> clauseList = new ArrayList<Clause>();
 
         try {
@@ -43,6 +43,8 @@ public class Main {
         } catch (IOException e) {
             System.out.println("IO Exception");
         }
+
+        ClauseList clausePackage = new ClauseList(clauseList, totalClauses, variables);
 
         System.out.println(clauseList);
     }
