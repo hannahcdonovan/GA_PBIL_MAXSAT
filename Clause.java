@@ -2,11 +2,16 @@ import java.util.Arrays;
 
 public class Clause {
 
-    String[] clauseArray;
+    int[] clauseArray;
 
     public Clause(String clause) {
         String[] tempArray = clause.split(" ");
-        clauseArray = Arrays.copyOfRange(tempArray, 0, tempArray.length -1);
+        clauseArray = new int[tempArray.length];
+        for (int i = 0; i < tempArray.length - 1; i++) {
+            int num = Integer.parseInt(tempArray[i]);
+            clauseArray[i] = num;
+        }
+        //clauseArray = Arrays.copyOfRange(tempArray, 0, tempArray.length);
     }
 
     public String toString() {

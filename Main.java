@@ -3,14 +3,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     
     public static void readFile(String filename) {
         String clauseLine = null;
         Clause clause;
-        int literals;
+        int variables;
         int totalClauses;
+        List<Clause> clauseList = new ArrayList<Clause>();
 
         try {
             File initialFile = new File(filename);
@@ -19,14 +22,29 @@ public class Main {
             Reader reader = new FileReader(initialFile);
             
             BufferedReader buffReader = new BufferedReader(reader);
-            
+
+            boolean first = true;
+
             while ((clauseLine = buffReader.readLine()) != null) {
-                clause = new Clause(clauseLine);
-                System.out.println(clause.toString());
+
+                if (first) {
+                    String[] tempArray = clauseLine.split(" ");
+                    variables = Integer.parseInt(tempArray[2]);
+                    totalClauses = Integer.parseInt(tempArray[3]);
+                    first = false;
+                } else {
+                    clause = new Clause(clauseLine);
+                    clauseList.add(clause);
+
+                    //System.out.println(clause.toString());
+                }
+                
             }
         } catch (IOException e) {
             System.out.println("IO Exception");
         }
+
+        System.out.println(clauseList);
     }
 
     public static void main(String[] args) {
