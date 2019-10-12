@@ -45,12 +45,18 @@ public class Main {
 
         ClauseList clausePackage = new ClauseList(clauseList, totalClauses, variables);
         Individual individual = new Individual(clausePackage.getVariableNum());
-        Population population = new Population(50);
+        Population populationInstance = new Population(50);
 
         // System.out.println("Individual size " + individual.size());
         // System.out.println("Individual " + individual.generateIndividual());
         // System.out.println(clausePackage.toString());
-        System.out.println(population.generateRandomPopulation(clausePackage.getVariableNum()));
+
+        Population population = populationInstance.generateRandomPopulation(clausePackage.getVariableNum());
+        System.out.println(population.getPopulationList());
+
+        for (int i=0; i < population.size(); i++) {
+                population.getIndividual(i).mutate(0.5);
+        }
         
     }
 

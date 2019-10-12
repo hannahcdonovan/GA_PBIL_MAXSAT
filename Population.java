@@ -13,12 +13,24 @@ public class Population {
 
     //populates list with Individuals randmly
     //called to start GA 
-    public List generateRandomPopulation(int variableNum) {
+    public Population generateRandomPopulation(int variableNum) {
         Individual individual = new Individual(variableNum);
         for (int i = 0; i < this.populationNum; i++) {
             popList.add(individual.generateIndividual());
         }
+        return this;
+    }
+
+    public List getPopulationList() {
         return popList;
+    }
+
+    public Individual getIndividual(int index) {
+        return popList.get(index);
+    }
+
+    public int size() {
+        return popList.size();
     }
 
     //popualtes list of Inviduals according to pbil vector probabilties 
