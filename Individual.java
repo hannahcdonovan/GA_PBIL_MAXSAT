@@ -31,6 +31,10 @@ public class Individual {
         individual[index] = value;
     }
 
+    public int getValue(int index) {
+        return this.individual[index];
+    }
+
     public int size() {
         return individual.length;
     }

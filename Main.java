@@ -51,12 +51,17 @@ public class Main {
         // System.out.println("Individual " + individual.generateIndividual());
         // System.out.println(clausePackage.toString());
 
-        Population population = populationInstance.generateRandomPopulation(clausePackage.getVariableNum());
-        System.out.println(population.getPopulationList());
+        PBIL pbil = new PBIL(clausePackage, 0.1, 0.1, 0.1, 0.1, 1, 10);
+        pbil.optimize();
 
+        //Population population = populationInstance.generateRandomPopulation(clausePackage.getVariableNum());
+        //System.out.println(population.getPopulationList());
+
+/*
         for (int i=0; i < population.size(); i++) {
                 population.getIndividual(i).mutate(0.5);
         }
+        */
         
     }
 
