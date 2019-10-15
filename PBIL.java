@@ -2,6 +2,12 @@ public class PBIL {
 
 	int[] pbilVec;
 	ClauseList problem;
+	int popSize;
+	float posLearnRate;
+	float negLearnRate;
+	float mutateProb;
+	float mutateAmount;
+
 
     public PBIL() {
         
