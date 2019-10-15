@@ -51,7 +51,7 @@ public class Main {
         // System.out.println("Individual " + individual.generateIndividual());
         // System.out.println(clausePackage.toString());
 
-        PBIL pbil = new PBIL(clausePackage, 0.1, 0.1, 0.1, 0.1, 1, 10);
+        PBIL pbil = new PBIL(clausePackage, 0.1, 0.075, 0.02, 0.05, 1000, 100);
         pbil.optimize();
 
         //Population population = populationInstance.generateRandomPopulation(clausePackage.getVariableNum());

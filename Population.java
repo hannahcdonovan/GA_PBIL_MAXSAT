@@ -38,6 +38,8 @@ public class Population {
     //called for each pbil iteration
     public void generateRandomVectorPopulation(int variables, double[] pbilVec) {
 
+    	this.popList.clear();
+
     	Random generator = new Random();
     	for(int i = 0; i < this.populationNum; i++) {
     		Individual newInd = new Individual(variables);

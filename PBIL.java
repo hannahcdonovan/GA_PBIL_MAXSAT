@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Random;
 
 public class PBIL {
 
@@ -15,10 +16,6 @@ public class PBIL {
 
     public void updateVec(Individual best, Individual worst) {
 
-    	System.out.println(vecToString(pbilVec));
-    	System.out.println("Best: " + best);
-    	System.out.println("Worst: " + worst);
-
     	for(int i = 1; i < best.individual.length; i++) {
     		int bestLiteral = best.getValue(i);
     		int worstLiteral = worst.getValue(i);
@@ -33,9 +30,25 @@ public class PBIL {
     			pbilVec[i - 1] = posIncrement;
     		}
     	}
-    	System.out.println(vecToString(pbilVec));
-
     }
+
+
+    public void mutate() {
+    	Random generator = new Random();
+    	int cutoff = (int) Math.round(100 * this.mutateProb);
+    	for(int i = 0; i < pbilVec.length; i++) {
+    		int result = generator.nextInt(100);
+    		if(result < cutoff) {
+    			System.out.println("MUTATE " + i);
+    			if(result % 2 == 0) { //mutate up
+    				pbilVec[i] = Math.min(pbilVec[i] + this.mutateAmount, 1.0);
+    			} else { //mutate down
+    				pbilVec[i] = Math.max(pbilVec[i] - this.mutateAmount, 0.0);
+    			}
+ 			}
+    	}
+    }
+
 
     public int getFitness(Individual ind) {
 
@@ -73,8 +86,6 @@ public class PBIL {
 
     	for(int i = 0; i < currentPop.size(); i++) {
     		int fitness = this.getFitness(this.currentPop.popList.get(i));
-    		System.out.println(fitness);
-
     		if(fitness > max) {
     			max = fitness;
     			bestInd = this.currentPop.popList.get(i);
@@ -90,8 +101,24 @@ public class PBIL {
     }
 
     public void optimize() {
-    	Individual[] results = this.findBestWorst();
-    	this.updateVec(results[0], results[1]);
+
+    	for(int i = 0; i < this.iterations; i ++) {
+    		System.out.println("****************");
+    		Individual[] results = this.findBestWorst();
+    		this.updateVec(results[0], results[1]);
+    		this.mutate();
+    		//System.out.println(vecToString(this.pbilVec));
+    		this.currentPop.generateRandomVectorPopulation(this.problem.variableNum, this.pbilVec);
+    		System.out.println("******************");
+    	}
+    	Individual suggestedBest = new Individual(this.problem.variableNum);
+    	for(int i = 1; i <= this.problem.variableNum; i++) {
+    		int num = (int) Math.round(this.pbilVec[i-1]);
+    		suggestedBest.setValue(i, num);
+    	}
+    	System.out.println("Suggests the best is " + this.getFitness(suggestedBest));
+    	System.out.println(suggestedBest);
+
     }
 
     public static String vecToString(double[] vec) {
@@ -121,6 +148,5 @@ public class PBIL {
     	Population pop = new Population(this.popSize);
     	pop.generateRandomVectorPopulation(problem.variableNum, this.pbilVec);
     	this.currentPop = pop;
-    	System.out.println(this.currentPop);
     }
 }
