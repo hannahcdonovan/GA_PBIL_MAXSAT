@@ -20,7 +20,6 @@ public class PBIL {
     		int bestLiteral = best.getValue(i);
     		int worstLiteral = worst.getValue(i);
 
-
     		if(bestLiteral != worstLiteral) {
     			double posIncrement = pbilVec[i - 1] * (1.0 - posLearnRate) + posLearnRate * bestLiteral;
     			double negIncrement = posIncrement * (1.0 - negLearnRate) + negLearnRate * bestLiteral;
@@ -39,7 +38,6 @@ public class PBIL {
     	for(int i = 0; i < pbilVec.length; i++) {
     		int result = generator.nextInt(100);
     		if(result < cutoff) {
-    			System.out.println("MUTATE " + i);
     			if(result % 2 == 0) { //mutate up
     				pbilVec[i] = Math.min(pbilVec[i] + this.mutateAmount, 1.0);
     			} else { //mutate down
@@ -52,28 +50,28 @@ public class PBIL {
 
     public int getFitness(Individual ind) {
 
-    	int satisfied = 0;
+    	int notSatisfied = 0;
 
     	for(int i = 0; i < this.problem.clauseList.size(); i++) {
-    		boolean wrong = false;
+    		boolean check = false;
     		int[] clause = this.problem.clauseList.get(i).clauseArray;
     		for(int j = 0; j < clause.length; j++) {
     			int literal = clause[j];
     			if(literal < 0) {
-    				if(ind.getValue(Math.abs(literal)) == 1) {
-    					wrong = true;
+    				if(ind.getValue(Math.abs(literal)) == 0) {
+    					check = true;
     				}
     			} else {
-    				if(ind.getValue(Math.abs(literal)) == 0) {
-    					wrong = true;
+    				if(ind.getValue(Math.abs(literal)) == 1) {
+    					check = true;
     				}
     			}
     		}
-    		if(!wrong) {
-    			satisfied++;
-    		}
+    		if(!check) {
+    			notSatisfied++;
+    		} 
     	}
-    	return satisfied;
+    	return notSatisfied;
     }
 
 
@@ -88,37 +86,31 @@ public class PBIL {
     		int fitness = this.getFitness(this.currentPop.popList.get(i));
     		if(fitness > max) {
     			max = fitness;
-    			bestInd = this.currentPop.popList.get(i);
+    			worstInd = this.currentPop.popList.get(i);
     		} else if(fitness < min) {
     			min = fitness; 
-    			worstInd = this.currentPop.popList.get(i);
+    			bestInd = this.currentPop.popList.get(i);
     		}
     	}
     	Individual[] results = new Individual[]{bestInd, worstInd};
-    	System.out.println("best is " + max);
-    	System.out.println("worst is " + min);
+    	System.out.println("BEST IS 	" + min);
     	return results;
     }
 
     public void optimize() {
 
     	for(int i = 0; i < this.iterations; i ++) {
-    		System.out.println("****************");
     		Individual[] results = this.findBestWorst();
     		this.updateVec(results[0], results[1]);
     		this.mutate();
-    		//System.out.println(vecToString(this.pbilVec));
     		this.currentPop.generateRandomVectorPopulation(this.problem.variableNum, this.pbilVec);
-    		System.out.println("******************");
     	}
     	Individual suggestedBest = new Individual(this.problem.variableNum);
     	for(int i = 1; i <= this.problem.variableNum; i++) {
     		int num = (int) Math.round(this.pbilVec[i-1]);
     		suggestedBest.setValue(i, num);
     	}
-    	System.out.println("Suggests the best is " + this.getFitness(suggestedBest));
-    	System.out.println(suggestedBest);
-
+    	System.out.println("Suggests the best is " + this.getFitness(suggestedBest) + ": " + suggestedBest);
     }
 
     public static String vecToString(double[] vec) {

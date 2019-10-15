@@ -66,13 +66,13 @@ public class Population {
     	return result;
     }
 
-/*
+
 	public static void main(String[] args) {
         Population pop = new Population(10);
-        double[] vec = new double[]{0.1, 0.1, 0.9, 0.9};
+        double[] vec = new double[]{0.5, 0.5, 0.5, 0.5};
         pop.generateRandomVectorPopulation(4, vec);
         System.out.println(pop);
 
     }
-*/
+
 }
