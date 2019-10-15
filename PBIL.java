@@ -15,7 +15,25 @@ public class PBIL {
 
     public void updateVec(Individual best, Individual worst) {
 
+    	System.out.println(vecToString(pbilVec));
+    	System.out.println("Best: " + best);
+    	System.out.println("Worst: " + worst);
 
+    	for(int i = 1; i < best.individual.length; i++) {
+    		int bestLiteral = best.getValue(i);
+    		int worstLiteral = worst.getValue(i);
+
+
+    		if(bestLiteral != worstLiteral) {
+    			double posIncrement = pbilVec[i - 1] * (1.0 - posLearnRate) + posLearnRate * bestLiteral;
+    			double negIncrement = posIncrement * (1.0 - negLearnRate) + negLearnRate * bestLiteral;
+    			pbilVec[i - 1] = negIncrement;
+    		} else {
+    			double posIncrement = pbilVec[i - 1] * (1.0 - posLearnRate) + posLearnRate * bestLiteral;
+    			pbilVec[i - 1] = posIncrement;
+    		}
+    	}
+    	System.out.println(vecToString(pbilVec));
 
     }
 
@@ -44,7 +62,7 @@ public class PBIL {
     	}
     	return satisfied;
     }
-    
+
 
     public Individual[] findBestWorst() {
     	Individual bestInd = this.currentPop.popList.get(0);
@@ -74,6 +92,16 @@ public class PBIL {
     public void optimize() {
     	Individual[] results = this.findBestWorst();
     	this.updateVec(results[0], results[1]);
+    }
+
+    public static String vecToString(double[] vec) {
+    	String result = "";
+
+    	for(int i = 0; i < vec.length; i++) {
+    		result += vec[i];
+    		result += " ";
+    	}
+    	return result;
     }
 
     public PBIL(ClauseList problem, double posLearnRate, double negLearnRate, double mutateProb, double mutateAmount, int iterations, int popSize) {
