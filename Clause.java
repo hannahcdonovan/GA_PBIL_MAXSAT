@@ -14,6 +14,10 @@ public class Clause {
         //clauseArray = Arrays.copyOfRange(tempArray, 0, tempArray.length);
     }
 
+    public int[] getArray() {
+        return this.clauseArray;
+    }
+
     public String toString() {
         String rep = "";
         for (int i = 0; i < clauseArray.length; i++) {

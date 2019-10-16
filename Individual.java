@@ -47,6 +47,32 @@ public class Individual {
         }
     }
 
+    public int getFitness(ClauseList problem) {
+
+        int notSatisfied = 0;
+
+        for(int i = 0; i < problem.getList().size(); i++) {
+            boolean check = false;
+            int[] clause = problem.getList().get(i).getArray();
+            for(int j = 0; j < clause.length; j++) {
+                int literal = clause[j];
+                if(literal < 0) {
+                    if(this.getValue(Math.abs(literal)) == 0) {
+                        check = true;
+                    }
+                } else {
+                    if(this.getValue(Math.abs(literal)) == 1) {
+                        check = true;
+                    }
+                }
+            }
+            if(!check) {
+                notSatisfied++;
+            } 
+        }
+        return notSatisfied;
+    }
+
     // public void mutate(double probability) {
     //     int prob = (int) probability * 100;
     //     boolean update = false;

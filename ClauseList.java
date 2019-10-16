@@ -22,6 +22,10 @@ public class ClauseList {
         return this.variableNum;
     }
 
+    public List<Clause> getList() {
+        return this.clauseList;
+    }
+
     public String toString() {
         String stringRep = " ";
         for (int i = 0; i < this.clauseList.size(); i++) {
