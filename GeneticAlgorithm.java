@@ -55,6 +55,7 @@ public class GeneticAlgorithm {
             int k = 0;
             while (k < fitness) {
                 probabilityPicker.add(ind);
+                k++;
             }
         }
         System.out.println(probabilityPicker.toString());
