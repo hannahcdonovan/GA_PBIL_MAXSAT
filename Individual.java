@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class Individual {
+public class Individual implements Comparable<Individual> {
 
     // public ClauseList problemInfo;
 
@@ -9,6 +9,8 @@ public class Individual {
     public int[] individual;
 
     public Random rand;
+
+    public int fitness = -1;
     
     public Individual(int individualNum) {
         this.individualNum = individualNum;
@@ -47,6 +49,10 @@ public class Individual {
         }
     }
 
+
+    /*
+        Returns the number of clauses that the individual does not satisfy 
+    */
     public int getFitness(ClauseList problem) {
 
         int notSatisfied = 0;
@@ -70,6 +76,7 @@ public class Individual {
                 notSatisfied++;
             } 
         }
+        this.fitness = notSatisfied;
         return notSatisfied;
     }
 
@@ -89,6 +96,11 @@ public class Individual {
     // public int fitness(ClauseList clause) {
 
     // }
+
+    @Override
+    public int compareTo(Individual otherInd) {
+        return otherInd.fitness - this.fitness;
+    }
 
     public String toString() {
         String representation = "";

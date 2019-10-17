@@ -14,12 +14,12 @@ public class Population {
 
     //populates list with Individuals randmly
     //called to start GA 
-    public Population generateRandomPopulation(int variableNum) {
+    public void generateRandomPopulation(int variableNum) {
         Individual individual = new Individual(variableNum);
         for (int i = 0; i < this.populationNum; i++) {
             popList.add(individual.generateIndividual());
         }
-        return this;
+        //return this;
     }
 
     public void addIndividual(Individual ind) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GeneticAlgorithm {
 
@@ -29,48 +30,37 @@ public class GeneticAlgorithm {
     // public List<Individual> recombine(Population pop) {
     // }
 
-    public Population rankSelection(List<Individual> offSpring) {
-        int newPopSize = offSpring.size() / 2;
-        Population newPop = new Population(newPopSize);
+    public Population rankSelection(Population pop) {
 
-        Map<Individual, Integer> fitnessTable = new HashMap<Individual, Integer>();
-        
-        // Get the total fitness for the population
-        int offSpringTotalFitness = 0;
-        for (int i = 0; i < offSpring.size(); i++) {
-            offSpringTotalFitness += offSpring.get(i).getFitness(problem);
+        List<Individual> offSpring = pop.popList;
+
+        for(Individual ind: offSpring) {
+            int fitness = ind.getFitness(this.problem);
         }
 
-        List<Individual> probabilityPicker = new ArrayList<Individual>(offSpringTotalFitness);
+        Collections.sort(offSpring);
+        int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
+        List<Individual> indList = new ArrayList<Individual>();
 
-
-        // Store different individuals and their respective ranked fitnesses in a hashtable
-        for (int j = 0; j < offSpring.size(); j++) {
-            fitnessTable.put(offSpring.get(j), offSpring.get(j).getFitness(problem));
-        }
-
-        for (Map.Entry<Individual, Integer> entry: fitnessTable.entrySet()) {
-            Individual ind = entry.getKey();
-            int fitness = entry.getValue();
-            int k = 0;
-            while (k < fitness) {
-                probabilityPicker.add(ind);
-                k++;
+        for(int i = 0; i < offSpring.size(); i++) {
+            Individual currentInd = offSpring.get(i);
+            for(int j = 0; j < i + 1; j++) {
+                indList.add(currentInd);
             }
         }
-        System.out.println(probabilityPicker.toString());
 
-        Random generator = new Random();
-
-        int h = 0;
-        while (h < newPopSize) {
-            int randIndex = generator.nextInt(probabilityPicker.size());
-            newPop.addIndividual(probabilityPicker.get(randIndex));
-            h++; 
+        Random rand = new Random();
+        List<Individual> newPopList = new ArrayList<Individual>();
+        for(int i = 0; i < offSpring.size(); i++) {
+            int index = rand.nextInt(indList.size());
+            newPopList.add(indList.get(index));
         }
 
+        Population newPop = new Population(pop.populationNum);
+        newPop.popList = newPopList;
         return newPop;
     }
+
 
     public Population tournamentSelection(List<Individual> offSpring) {
         Population newPop = new Population(offSpring.size() / 2);
@@ -122,7 +112,7 @@ public class GeneticAlgorithm {
     public Population select(List<Individual> offSpring) {
         switch (this.selectionType) {
             case "rs":
-                return rankSelection(offSpring);
+                //return rankSelection(pop);
             case "ts":
                 return tournamentSelection(offSpring);
             case "sbg":
@@ -131,6 +121,44 @@ public class GeneticAlgorithm {
                 System.out.println("This selection type is not available.");
                 Population defaultPop = new Population(0);
                 return defaultPop;
+        }
+    }
+
+    public static void main(String[] args) { 
+        Population pop = new Population(6);
+        pop.generateRandomPopulation(4);
+        System.out.println(pop);
+
+        Clause c1 = new Clause("1 0");
+        Clause c2 = new Clause("2 0");
+        Clause c3 = new Clause("3 0");
+        Clause c4 = new Clause("4 0");
+
+        List<Clause> clauseList = new ArrayList<Clause>();
+        clauseList.add(c1);
+        clauseList.add(c2);
+        clauseList.add(c3);
+        clauseList.add(c4);
+
+        ClauseList cl = new ClauseList(clauseList, 4, 4);
+
+        for(Individual ind : pop.popList) {
+            int fitness = ind.getFitness(cl);
+            System.out.println(ind + " -> " + fitness);
+
+        }
+        Collections.sort(pop.popList);
+        System.out.println(pop.popList);
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 6, "rs", "1c", 0.01, 0.01, 1);
+        Population newPop = ga.rankSelection(pop);
+        System.out.println("___________");
+        System.out.println(newPop);
+
+        for(Individual ind : newPop.popList) {
+            int fitness = ind.getFitness(cl);
+            System.out.println(ind + " -> " + fitness);
+
         }
     }
 
