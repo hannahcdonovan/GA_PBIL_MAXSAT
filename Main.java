@@ -54,6 +54,10 @@ public class Main {
         PBIL pbil = new PBIL(clausePackage, 0.1, 0.075, 0.02, 0.05, 1000, 100);
         pbil.optimize();
 
+        GeneticAlgorithm ga = new GeneticAlgorithm(clausePackage, 100, ts, 0, 0, 0, 100);
+        System.out.println(ga.select())
+
+
         //Population population = populationInstance.generateRandomPopulation(clausePackage.getVariableNum());
         //System.out.println(population.getPopulationList());
 

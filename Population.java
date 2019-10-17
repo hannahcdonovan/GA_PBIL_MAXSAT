@@ -22,6 +22,10 @@ public class Population {
         return this;
     }
 
+    public void addIndividual(Individual ind) {
+        popList.add(ind);
+    }
+
     public List getPopulationList() {
         return popList;
     }
@@ -65,7 +69,6 @@ public class Population {
     	}
     	return result;
     }
-
 
 	public static void main(String[] args) {
         Population pop = new Population(10);
