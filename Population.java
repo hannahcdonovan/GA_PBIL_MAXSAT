@@ -26,7 +26,7 @@ public class Population {
         popList.add(ind);
     }
 
-    public List getPopulationList() {
+    public List<Individual> getPopulationList() {
         return popList;
     }
 
@@ -77,5 +77,4 @@ public class Population {
         System.out.println(pop);
 
     }
-
 }

@@ -1,4 +1,6 @@
 import java.util.Random;
+import java.lang.Math;
+import java.util.Arrays;
 
 public class Individual implements Comparable<Individual> {
 
@@ -38,7 +40,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public int size() {
-        return individual.length;
+        return this.individualNum;
     }
 
     public void swap(int index) {
@@ -49,10 +51,36 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
-
     /*
         Returns the number of clauses that the individual does not satisfy 
     */
+    public int[] getIndividualList() {
+        return individual;
+    }
+
+    public Individual subSet(int first, int second) {
+        Individual newIndividual = new Individual(second - first);
+
+        int[] tempInd = Arrays.copyOfRange(this.getIndividualList(), first, second);
+        newIndividual.individual = tempInd;
+        System.out.println(newIndividual.size());
+        
+        return newIndividual;
+    }
+
+    public Individual add(Individual individual) {
+        Individual newIndividual = new Individual(this.size() + individual.size());
+
+        for (int j = 0; j < this.size(); j++) {
+            newIndividual.individual[j] = this.getValue(j);
+        }
+        for (int i = 0; i < individual.size() ; i++) {
+            newIndividual.individual[i + this.size()] = individual.getValue(i);
+        }
+        return newIndividual;
+    }
+
+
     public int getFitness(ClauseList problem) {
 
         int notSatisfied = 0;
@@ -104,9 +132,21 @@ public class Individual implements Comparable<Individual> {
 
     public String toString() {
         String representation = "";
-        for (int i = 1; i < individual.length; i++) {
+        for (int i = 0; i < individual.length - 1; i++) {
             representation += individual[i];
         }
         return representation;
+    }
+
+    public static void main(String[] args) {
+        Individual ind1 = new Individual(3);
+        ind1 = ind1.generateIndividual();
+        Individual ind2 = new Individual(2);
+        ind2 = ind2.generateIndividual();
+
+        System.out.println(ind1);
+        System.out.println(ind2);
+        
+        System.out.println("test " + ind1.subSet(0, 1));
     }
 }

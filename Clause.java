@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Clause {
 
     int[] clauseArray;
@@ -11,7 +9,6 @@ public class Clause {
             int num = Integer.parseInt(tempArray[i]);
             clauseArray[i] = num;
         }
-        //clauseArray = Arrays.copyOfRange(tempArray, 0, tempArray.length);
     }
 
     public int[] getArray() {
