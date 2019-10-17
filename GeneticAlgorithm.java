@@ -42,7 +42,7 @@ public class GeneticAlgorithm {
         int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
         List<Individual> indList = new ArrayList<Individual>();
 
-        for(int i = 0; i < offSpring.size(); i++) {
+        for(int i = 0; i < offSpring.size() / 2; i++) {
             Individual currentInd = offSpring.get(i);
             for(int j = 0; j < i + 1; j++) {
                 indList.add(currentInd);
@@ -62,11 +62,24 @@ public class GeneticAlgorithm {
     }
 
 
-    public Population tournamentSelection(List<Individual> offSpring) {
-        Population newPop = new Population(offSpring.size() / 2);
+
+    public Population tournamentSelection(Population pop) {
+
+        List<Individual> offSpring = pop.popList;
+        Population newPop = new Population(offSpring.size());
         
-        for (int i = 0; i < offSpring.size() - 1; i++) {
-            if (offSpring.get(i).getFitness(this.problem) >= offSpring.get(i + 1).getFitness(this.problem)) {
+        for (int i = 0; i < offSpring.size() - 1; i += 2) {
+            if (offSpring.get(i).getFitness(this.problem) <= offSpring.get(i + 1).getFitness(this.problem)) {
+                newPop.addIndividual(offSpring.get(i));
+            } else {
+                newPop.addIndividual(offSpring.get(i + 1));
+            }
+        }
+
+        Collections.shuffle(offSpring);
+
+        for (int i = 0; i < offSpring.size() - 1; i += 2) {
+            if (offSpring.get(i).getFitness(this.problem) <= offSpring.get(i + 1).getFitness(this.problem)) {
                 newPop.addIndividual(offSpring.get(i));
             } else {
                 newPop.addIndividual(offSpring.get(i + 1));
@@ -75,7 +88,9 @@ public class GeneticAlgorithm {
         return newPop;
     }
 
-    public Population selectionByGroups(List<Individual> offSpring) {
+
+    public Population selectionByGroups(Population pop) {
+        List<Individual> offSpring = pop.popList;
         int popNum = offSpring.size() / 2;
 
         Population newPop = new Population(popNum);
@@ -89,19 +104,21 @@ public class GeneticAlgorithm {
         }
 
         //Calculate fitness of last half of array
-        int j = offSpring.size();
+        int j = offSpring.size() - 1;
         int group2Fitness = 0;
         while (j >= popNum) {
             group2Fitness += offSpring.get(j).getFitness(this.problem);
             j--;
         }
 
-        if (group1Fitness >= group2Fitness) {
+        if (group1Fitness <= group2Fitness) {
             for (int k = 0; k < popNum; k++) {
+                newPop.addIndividual(offSpring.get(k));
                 newPop.addIndividual(offSpring.get(k));
             }
         } else {
-            for (int h = offSpring.size(); h >= popNum; h--) {
+            for (int h = offSpring.size() - 1; h >= popNum; h--) {
+                newPop.addIndividual(offSpring.get(h));
                 newPop.addIndividual(offSpring.get(h));
             }
         }
@@ -109,14 +126,17 @@ public class GeneticAlgorithm {
         return newPop;
     }
 
-    public Population select(List<Individual> offSpring) {
+    public Population select(Population pop) {
         switch (this.selectionType) {
             case "rs":
-                //return rankSelection(pop);
+                System.out.println("Rank Selection");
+                return rankSelection(pop);
             case "ts":
-                return tournamentSelection(offSpring);
+                System.out.println("Tournament Selection");
+                return tournamentSelection(pop);
             case "sbg":
-                return selectionByGroups(offSpring);
+                System.out.println("Selection By Groups");
+                return selectionByGroups(pop);
             default:
                 System.out.println("This selection type is not available.");
                 Population defaultPop = new Population(0);
@@ -127,7 +147,6 @@ public class GeneticAlgorithm {
     public static void main(String[] args) { 
         Population pop = new Population(6);
         pop.generateRandomPopulation(4);
-        System.out.println(pop);
 
         Clause c1 = new Clause("1 0");
         Clause c2 = new Clause("2 0");
@@ -147,13 +166,10 @@ public class GeneticAlgorithm {
             System.out.println(ind + " -> " + fitness);
 
         }
-        Collections.sort(pop.popList);
-        System.out.println(pop.popList);
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 6, "rs", "1c", 0.01, 0.01, 1);
-        Population newPop = ga.rankSelection(pop);
+        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 6, "sbg", "1c", 0.01, 0.01, 1);
+        Population newPop = ga.select(pop);
         System.out.println("___________");
-        System.out.println(newPop);
 
         for(Individual ind : newPop.popList) {
             int fitness = ind.getFitness(cl);
