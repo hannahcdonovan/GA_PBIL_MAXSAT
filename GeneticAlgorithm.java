@@ -47,7 +47,7 @@ public class GeneticAlgorithm {
         Random generator = new Random();
         int crossoverPicker = generator.nextInt(100);
         boolean doCrossover = crossoverRoulette[crossoverPicker];
-        
+
         if (doCrossover) {
             child1 = firstParent.subSet(0, crossoverPoint).add(secondParent.subSet(crossoverPoint, this.problem.getVariableNum()));
             child2 = secondParent.subSet(0, crossoverPoint).add(firstParent.subSet(crossoverPoint, this.problem.getVariableNum()));
@@ -79,16 +79,16 @@ public class GeneticAlgorithm {
             List<Individual> children = crossoverHelper(parent1, parent2, crossoverPoint);
             for (Individual child : children) {
                 newPop.addIndividual(child);
-            }  
+            }
         }
 
         return newPop;
-        
+
     }
 
     public Population uniformCrossover(Population pop) {
 
-    } 
+    }
 
     public Population recombine(Population pop) {
         switch(this.crossoverType) {
@@ -104,7 +104,7 @@ public class GeneticAlgorithm {
     }
 
     public Population rankSelection(Population pop) {
-        
+
         List<Individual> offspring = pop.popList;
 
         for (Individual ind : offSpring) {
@@ -115,7 +115,7 @@ public class GeneticAlgorithm {
         int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
         List<Individual> indList = new ArrayList<Individual>();
 
-        for(int i = 0; i < offSpring.size(); i++) {
+        for(int i = 0; i < offSpring.size() / 2; i++) {
             Individual currentInd = offSpring.get(i);
             for(int j = 0; j < i + 1; j++) {
                 indList.add(currentInd);
@@ -134,10 +134,13 @@ public class GeneticAlgorithm {
         return newPop;
     }
 
+
+
     public Population tournamentSelection(Population pop) {
+
         List<Individual> offSpring = pop.popList;
         Population newPop = new Population(offSpring.size());
-        
+
         for (int i = 0; i < offSpring.size() - 1; i += 2) {
             if (offSpring.get(i).getFitness(this.problem) <= offSpring.get(i + 1).getFitness(this.problem)) {
                 newPop.addIndividual(offSpring.get(i));
@@ -157,6 +160,7 @@ public class GeneticAlgorithm {
         }
         return newPop;
     }
+
 
     public Population selectionByGroups(Population pop) {
         List<Individual> offSpring = pop.popList;
@@ -222,7 +226,7 @@ public class GeneticAlgorithm {
         }
     }
 
-    public static void main(String[] args) { 
+    public static void main(String[] args) {
         Population pop = new Population(6);
         pop.generateRandomPopulation(4);
 
