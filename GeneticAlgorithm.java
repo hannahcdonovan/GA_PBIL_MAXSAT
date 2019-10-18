@@ -10,8 +10,8 @@ public class GeneticAlgorithm {
     ClauseList problem;
     int popSize;
     String selectionType;
-    String crossOverType;
-	double crossOverProb;
+    String crossoverType;
+	double crossoverProb;
     double mutationProb;
     int iterations;
 
@@ -26,69 +26,103 @@ public class GeneticAlgorithm {
         this.iterations = iterations;
     }
 
-    public List<Individual> crossoverHelper(Individual firstParent, Individual secondParent, int crossoverPoint) {
+
+    public List<Individual> onePointCrossoverHelper(Individual firstParent, Individual secondParent) {
         List<Individual> children = new ArrayList<Individual>();
 
+        Random generator = new Random();
         //Two parents will produce four children - child1 and child 2 will be doubled;
         Individual child1;
         Individual child2;
 
-        // need to account for the probability
-        int crossoverInt = (int) Math.round(this.crossoverProb * 100);
-        boolean[] crossoverRoulette = new boolean[100];
-        for (int i = 0; i < 100; i++) {
-            if (i < crossoverInt) {
-                crossoverRoulette[i] = true;
-            } else {
-                crossoverRoulette[i] = false;
-            }
+        int crossoverPoint = generator.nextInt(this.problem.getVariableNum()) + 1;
+
+        int[] c1 = new int[this.problem.getVariableNum() + 1];
+        int[] c2 = new int[this.problem.getVariableNum() + 1];
+
+
+        for(int i = 1; i < crossoverPoint + 1; i ++) {
+            c1[i] = firstParent.getValue(i);
+            c2[i] = secondParent.getValue(i);
         }
 
-        Random generator = new Random();
-        int crossoverPicker = generator.nextInt(100);
-        boolean doCrossover = crossoverRoulette[crossoverPicker];
-
-        if (doCrossover) {
-            child1 = firstParent.subSet(0, crossoverPoint).add(secondParent.subSet(crossoverPoint, this.problem.getVariableNum()));
-            child2 = secondParent.subSet(0, crossoverPoint).add(firstParent.subSet(crossoverPoint, this.problem.getVariableNum()));
-        } else {
-            child1 = firstParent;
-            child2 = secondParent;
+        for(int i = crossoverPoint + 1; i < this.problem.getVariableNum() + 1; i++) {
+            c1[i] = secondParent.getValue(i);
+            c2[i] = firstParent.getValue(i);
         }
+
+        child1 = new Individual(this.problem.getVariableNum());
+        child2 = new Individual(this.problem.getVariableNum());
+        child1.individual = c1;
+        child2.individual = c2;
+
+        children.add(child1);
+        children.add(child2);
 
         return children;
     }
 
+
     public Population onePointCrossover(Population pop) {
+
         Population newPop = new Population(pop.size() * 2);
 
         Random generator = new Random();
 
-        // Using the length of the individual based on our problem, generate random crossover point
-        int crossoverPoint = generator.nextInt(this.problem.getVariableNum());
-
         //Pick two candidates from the population, and then perform crossover
         List<Individual> populationList = pop.getPopulationList();
+        Collections.shuffle(populationList);
+
 
         Individual parent1;
         Individual parent2;
 
-        for (int i = 0; i < populationList.size() - 1; i++) {
+        for (int i = 0; i < populationList.size() - 1; i += 2) {
             parent1 = populationList.get(i);
             parent2 = populationList.get(i + 1);
-            List<Individual> children = crossoverHelper(parent1, parent2, crossoverPoint);
-            for (Individual child : children) {
-                newPop.addIndividual(child);
+            int cutoff = (int) Math.round(this.crossoverProb * 100); //using crossover probability 
+            int randNum = generator.nextInt(100);
+            System.out.println("rand num = " + randNum);
+            if(randNum < cutoff) {
+                List<Individual> children = onePointCrossoverHelper(parent1, parent2);
+                for (Individual child : children) {
+                    newPop.addIndividual(child);
+                }
             }
         }
-
         return newPop;
-
     }
 
+ 
     public Population uniformCrossover(Population pop) {
+        Population newPop = new Population(pop.size() * 2);
 
+        Random generator = new Random();
+
+        //Pick two candidates from the population, and then perform crossover
+        List<Individual> populationList = pop.getPopulationList();
+        Collections.shuffle(populationList);
+
+
+        Individual parent1;
+        Individual parent2;
+
+        for (int i = 0; i < populationList.size() - 1; i += 2) {
+            parent1 = populationList.get(i);
+            parent2 = populationList.get(i + 1);
+            int cutoff = (int) Math.round(this.crossoverProb * 100); //using crossover probability 
+            int randNum = generator.nextInt(100);
+            System.out.println("rand num = " + randNum);
+            if(randNum < cutoff) {
+                List<Individual> children = onePointCrossoverHelper(parent1, parent2);
+                for (Individual child : children) {
+                    newPop.addIndividual(child);
+                }
+            }
+        }
+        return newPop;
     }
+
 
     public Population recombine(Population pop) {
         switch(this.crossoverType) {
@@ -105,7 +139,7 @@ public class GeneticAlgorithm {
 
     public Population rankSelection(Population pop) {
 
-        List<Individual> offspring = pop.popList;
+        List<Individual> offSpring = pop.popList;
 
         for (Individual ind : offSpring) {
             int fitness = ind.getFitness(this.problem);
@@ -199,6 +233,7 @@ public class GeneticAlgorithm {
         return newPop;
     }
 
+
     public Population select(Population pop) {
         switch (this.selectionType) {
             case "rs":
@@ -249,7 +284,7 @@ public class GeneticAlgorithm {
 
         }
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 6, "sbg", "1c", 0.01, 0.01, 1);
+        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 6, "sbg", "1c", 0.7, 0.01, 1);
         Population newPop = ga.select(pop);
         System.out.println("___________");
 
@@ -258,5 +293,8 @@ public class GeneticAlgorithm {
             System.out.println(ind + " -> " + fitness);
 
         }
+
+        Population newPop2 = ga.onePointCrossover(newPop);
+
     }
 }

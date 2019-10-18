@@ -58,29 +58,6 @@ public class Individual implements Comparable<Individual> {
         return individual;
     }
 
-    public Individual subSet(int first, int second) {
-        Individual newIndividual = new Individual(second - first);
-
-        int[] tempInd = Arrays.copyOfRange(this.getIndividualList(), first, second);
-        newIndividual.individual = tempInd;
-        System.out.println(newIndividual.size());
-        
-        return newIndividual;
-    }
-
-    public Individual add(Individual individual) {
-        Individual newIndividual = new Individual(this.size() + individual.size());
-
-        for (int j = 0; j < this.size(); j++) {
-            newIndividual.individual[j] = this.getValue(j);
-        }
-        for (int i = 0; i < individual.size() ; i++) {
-            newIndividual.individual[i + this.size()] = individual.getValue(i);
-        }
-        return newIndividual;
-    }
-
-
     public int getFitness(ClauseList problem) {
 
         int notSatisfied = 0;
@@ -112,27 +89,24 @@ public class Individual implements Comparable<Individual> {
     //     int prob = (int) probability * 100;
     //     boolean update = false;
     //     System.out.println("Individual before mutation " + individual);
-    //     for (int i = 0; i < individual.length; i++) {
+    //     for (int i = 1; i < individual.length; i++) {
     //         update = rand.nextInt(prob)==0;
     //         if (update) {
     //             this.swap(i);
     //         }
     //     }
+        
     //     System.out.println("Individual after mutation " + individual);
     // }
 
-    // public int fitness(ClauseList clause) {
-
-    // }
-
-    @Override
+    //@Override
     public int compareTo(Individual otherInd) {
         return otherInd.fitness - this.fitness;
     }
 
     public String toString() {
         String representation = "";
-        for (int i = 0; i < individual.length - 1; i++) {
+        for (int i = 1; i < individual.length; i++) {
             representation += individual[i];
         }
         return representation;
@@ -146,7 +120,5 @@ public class Individual implements Comparable<Individual> {
 
         System.out.println(ind1);
         System.out.println(ind2);
-        
-        System.out.println("test " + ind1.subSet(0, 1));
     }
 }
