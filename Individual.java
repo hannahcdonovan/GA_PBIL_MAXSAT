@@ -85,19 +85,20 @@ public class Individual implements Comparable<Individual> {
         return notSatisfied;
     }
 
-    // public void mutate(double probability) {
-    //     int prob = (int) probability * 100;
-    //     boolean update = false;
-    //     System.out.println("Individual before mutation " + individual);
-    //     for (int i = 1; i < individual.length; i++) {
-    //         update = rand.nextInt(prob)==0;
-    //         if (update) {
-    //             this.swap(i);
-    //         }
-    //     }
-        
-    //     System.out.println("Individual after mutation " + individual);
-    // }
+     public void mutate(double probability) {
+         int prob = (int) (probability * 100);
+         boolean update = false;
+         System.out.print("Individual before mutation: ");
+         System.out.println(this);
+         for (int i = 1; i < individual.length; i++) {
+             update = (rand.nextInt(100) <= prob);
+             if (update) {
+                 this.swap(i);
+             }
+         }
+         System.out.println("Individual after mutation: ");
+         System.out.println(this);
+     }
 
     //@Override
     public int compareTo(Individual otherInd) {
@@ -120,5 +121,8 @@ public class Individual implements Comparable<Individual> {
 
         System.out.println(ind1);
         System.out.println(ind2);
+
+
+        ind1.mutate(0.5);
     }
 }
