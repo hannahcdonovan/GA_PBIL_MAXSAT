@@ -14,6 +14,7 @@ public class GeneticAlgorithm {
 	double crossoverProb;
     double mutationProb;
     int iterations;
+    Population currentPopulation; 
 
     public GeneticAlgorithm(ClauseList problem, int popSize, String selectionType, String crossoverType,
                             double crossoverProb, double mutationProb, int iterations) {
@@ -24,6 +25,11 @@ public class GeneticAlgorithm {
         this.crossoverProb = crossoverProb;
         this.mutationProb = mutationProb;
         this.iterations = iterations;
+
+        Population newPop = new Population(this.popSize);
+        newPop.generateRandomPopulation(this.problem.getVariableNum());
+        this.currentPopulation = newPop;
+        System.out.println(this.currentPopulation);
     }
 
 
@@ -63,46 +69,47 @@ public class GeneticAlgorithm {
     }
 
 
-    public Population onePointCrossover(Population pop) {
-
-        Population newPop = new Population(pop.size() * 2);
+    public List<Individual> uniformCrossoverHelper(Individual firstParent, Individual secondParent) {
+        List<Individual> children = new ArrayList<Individual>();
 
         Random generator = new Random();
+        //Two parents will produce four children - child1 and child 2 will be doubled;
+        Individual child1 = new Individual(this.problem.getVariableNum());
+        Individual child2 = new Individual(this.problem.getVariableNum());
 
-        //Pick two candidates from the population, and then perform crossover
-        List<Individual> populationList = pop.getPopulationList();
-        Collections.shuffle(populationList);
+        int[] c1 = new int[this.problem.getVariableNum() + 1];
+        int[] c2 = new int[this.problem.getVariableNum() + 1];
 
-
-        Individual parent1;
-        Individual parent2;
-
-        for (int i = 0; i < populationList.size() - 1; i += 2) {
-            parent1 = populationList.get(i);
-            parent2 = populationList.get(i + 1);
-            int cutoff = (int) Math.round(this.crossoverProb * 100); //using crossover probability 
-            int randNum = generator.nextInt(100);
-            System.out.println("rand num = " + randNum);
-            if(randNum < cutoff) {
-                List<Individual> children = onePointCrossoverHelper(parent1, parent2);
-                for (Individual child : children) {
-                    newPop.addIndividual(child);
-                }
+        for (int i = 1; i < this.problem.getVariableNum() + 1; i++)  {
+            int randNum = generator.nextInt(2);
+            if(randNum == 0) {
+                c1[i] = firstParent.getValue(i);
+                c2[i] = secondParent.getValue(i);
+            } else {
+                c1[i] = secondParent.getValue(i);
+                c2[i] = firstParent.getValue(i);
             }
-        }
-        return newPop;
-    }
+        } 
 
+        child1.individual = c1;
+        child2.individual = c2;
+
+        children.add(child1);
+        children.add(child2);
+
+        return children; 
+
+    }
  
-    public Population uniformCrossover(Population pop) {
-        Population newPop = new Population(pop.size() * 2);
+
+    public void recombine() {
+        Population newPop = new Population(this.currentPopulation.size());
 
         Random generator = new Random();
 
         //Pick two candidates from the population, and then perform crossover
-        List<Individual> populationList = pop.getPopulationList();
+        List<Individual> populationList = this.currentPopulation.getPopulationList();
         Collections.shuffle(populationList);
-
 
         Individual parent1;
         Individual parent2;
@@ -112,44 +119,54 @@ public class GeneticAlgorithm {
             parent2 = populationList.get(i + 1);
             int cutoff = (int) Math.round(this.crossoverProb * 100); //using crossover probability 
             int randNum = generator.nextInt(100);
-            System.out.println("rand num = " + randNum);
             if(randNum < cutoff) {
-                List<Individual> children = onePointCrossoverHelper(parent1, parent2);
-                for (Individual child : children) {
-                    newPop.addIndividual(child);
+                if(this.crossoverType.equals("1c")) {
+                    List<Individual> children = onePointCrossoverHelper(parent1, parent2);
+                    for (Individual child : children) {
+                        newPop.addIndividual(child);
+                    }
+                } else if (this.crossoverType.equals("uc")) {
+                    List<Individual> children = uniformCrossoverHelper(parent1, parent2);
+                    for(Individual child : children) {
+                        newPop.addIndividual(child);
+                    }
+                } else {
+                    System.out.println("something bad with crossover");
                 }
             }
         }
-        return newPop;
-    }
+        if (newPop.size() != this.currentPopulation.size()) {
+            int difference = this.currentPopulation.size() - newPop.size();
 
+            for(Individual ind: this.currentPopulation.getPopulationList()) {
+                int fitness = ind.getFitness(this.problem);
+            }
 
-    public Population recombine(Population pop) {
-        switch(this.crossoverType) {
-            case "1c":
-                return onePointCrossover(pop);
-            case "uc":
-                return uniformCrossover(pop);
-            default:
-                System.out.println("Sorry, that crossover type doesn't exist.");
-                Population defaultPop = new Population(0);
-                return defaultPop;
+            Collections.reverse(this.currentPopulation.popList);
+            for(int i = 0; i < difference; i++) {
+                newPop.addIndividual(this.currentPopulation.getIndividual(i));
+            }
         }
+
+        this.currentPopulation = newPop;
     }
 
-    public Population rankSelection(Population pop) {
 
-        List<Individual> offSpring = pop.popList;
+    public void rankSelection() {
+
+        List<Individual> offSpring = this.currentPopulation.popList;
 
         for (Individual ind : offSpring) {
             int fitness = ind.getFitness(this.problem);
         }
 
         Collections.sort(offSpring);
+
         int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
+
         List<Individual> indList = new ArrayList<Individual>();
 
-        for(int i = 0; i < offSpring.size() / 2; i++) {
+        for(int i = 0; i < offSpring.size(); i++) {
             Individual currentInd = offSpring.get(i);
             for(int j = 0; j < i + 1; j++) {
                 indList.add(currentInd);
@@ -158,21 +175,21 @@ public class GeneticAlgorithm {
 
         Random rand = new Random();
         List<Individual> newPopList = new ArrayList<Individual>();
-        for(int i = 0; i < offSpring.size() / 2; i++) {
+        for(int i = 0; i < offSpring.size(); i++) {
             int index = rand.nextInt(indList.size());
             newPopList.add(indList.get(index));
         }
 
-        Population newPop = new Population(pop.populationNum);
+        Population newPop = new Population(this.currentPopulation.size());
         newPop.popList = newPopList;
-        return newPop;
+        this.currentPopulation = newPop;
     }
 
 
 
-    public Population tournamentSelection(Population pop) {
+    public void tournamentSelection() {
 
-        List<Individual> offSpring = pop.popList;
+        List<Individual> offSpring = this.currentPopulation.popList;
         Population newPop = new Population(offSpring.size());
 
         for (int i = 0; i < offSpring.size() - 1; i += 2) {
@@ -192,12 +209,13 @@ public class GeneticAlgorithm {
                 newPop.addIndividual(offSpring.get(i + 1));
             }
         }
-        return newPop;
+        this.currentPopulation = newPop;
     }
 
 
-    public Population selectionByGroups(Population pop) {
-        List<Individual> offSpring = pop.popList;
+    public void selectionByGroups() {
+
+        List<Individual> offSpring = this.currentPopulation.popList;
         int popNum = offSpring.size() / 2;
 
         Population newPop = new Population(popNum);
@@ -230,35 +248,65 @@ public class GeneticAlgorithm {
             }
         }
 
-        return newPop;
+        this.currentPopulation = newPop;
     }
 
 
-    public Population select(Population pop) {
+    public void select() {
         switch (this.selectionType) {
             case "rs":
                 System.out.println("Rank Selection");
-                return rankSelection(pop);
+                rankSelection();
+                break;
             case "ts":
                 System.out.println("Tournament Selection");
-                return tournamentSelection(pop);
+                tournamentSelection();
+                break;
             case "sbg":
                 System.out.println("Selection By Groups");
-                return selectionByGroups(pop);
+                selectionByGroups();
+                break;
             default:
                 System.out.println("This selection type is not available.");
-                Population defaultPop = new Population(0);
-                return defaultPop;
+                //Population defaultPop = new Population(0);
+                //return defaultPop;
+                break;
         }
+    }
+
+    public Individual findBest() {
+        Individual best = this.currentPopulation.popList.get(0);
+        int min = best.getFitness(this.problem);
+
+        for(int i = 1; i < this.currentPopulation.size(); i++) {
+            Individual currentInd = this.currentPopulation.popList.get(i);
+            int fitness = currentInd.getFitness(this.problem);
+            if(fitness < min) {
+                best = currentInd;
+                min = fitness;
+            }
+        }
+        return best;
     }
 
     /**
      * To be called on an instance of Genetic Algorithms.
      */
     public void optimize() {
-        for (int i = 0; i < this.iterations; i++) {
 
+        for (int i = 0; i < this.iterations; i++) {
+            this.select();
+            this.recombine();
+            for(Individual ind : this.currentPopulation.popList) {
+                ind.mutate(this.mutationProb);
+                int fitness = ind.getFitness(this.problem);
+                System.out.println(ind + " -> " + fitness);
+            }
+            System.out.println(this.currentPopulation.size());
+            System.out.println("_______________");
         }
+        Individual best = this.findBest();
+        System.out.println(best + " - " + best.getFitness(this.problem));
     }
 
     public static void main(String[] args) {
@@ -278,23 +326,11 @@ public class GeneticAlgorithm {
 
         ClauseList cl = new ClauseList(clauseList, 4, 4);
 
-        for(Individual ind : pop.popList) {
-            int fitness = ind.getFitness(cl);
-            System.out.println(ind + " -> " + fitness);
+        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 20, "rs", "uc", 0.7, 0.01, 3);
+        //Population newPop = ga.select(pop);
+        //System.out.println("___________");
+        ga.optimize();
 
-        }
-
-        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 6, "sbg", "1c", 0.7, 0.01, 1);
-        Population newPop = ga.select(pop);
-        System.out.println("___________");
-
-        for(Individual ind : newPop.popList) {
-            int fitness = ind.getFitness(cl);
-            System.out.println(ind + " -> " + fitness);
-
-        }
-
-        Population newPop2 = ga.onePointCrossover(newPop);
 
     }
 }

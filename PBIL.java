@@ -14,6 +14,37 @@ public class PBIL {
 	Population currentPop;
 
 
+    /*
+    PBIL class represents an instance of the PBIL algorithm with the specific parameters. 
+
+    @param problem - ClauseList storing the information of each clause for the MAXSAT problem
+    @param posLearnRate - the positive learning rate
+    @param negLearnRate - the negative learning rate
+    @param mutateProb - the probaility that a mutation will occur to each vector component
+    @param mutateAmount - the amount by which a vector component will change if it is mutated
+    @param iterations - the number of iterations that this PBIL will run for 
+    @param popSize - the number of individuals that will be generated in each iteration's population 
+    */
+    public PBIL(ClauseList problem, double posLearnRate, double negLearnRate, double mutateProb, double mutateAmount, int iterations, int popSize) {
+        this.problem = problem;
+        this.posLearnRate = posLearnRate;
+        this.negLearnRate = negLearnRate;
+        this.mutateProb = mutateProb;
+        this.mutateAmount = mutateAmount;
+        this.iterations = iterations;
+        this.popSize = popSize;
+
+        int variables = problem.getVariableNum();
+        double[] vec = new double[variables];
+        Arrays.fill(vec, 0.50);
+        this.pbilVec = vec;
+
+        Population pop = new Population(this.popSize);
+        pop.generateRandomVectorPopulation(problem.getVariableNum(), this.pbilVec);
+        this.currentPop = pop;
+    }
+
+
 /* 
     updateVec updates the PBIL vector components towards the best individual and away from the worst individual
    
@@ -119,6 +150,7 @@ public class PBIL {
     	System.out.println("Suggests the best is " + suggestedBest.getFitness(this.problem) + ": " + suggestedBest);
     }
 
+
     public static String vecToString(double[] vec) {
     	String result = "";
 
@@ -129,33 +161,5 @@ public class PBIL {
     	return result;
     }
 
-/*
-    PBIL class represents an instance of the PBIL algorithm with the specific parameters. 
 
-    @param problem - ClauseList storing the information of each clause for the MAXSAT problem
-    @param posLearnRate - the positive learning rate
-    @param negLearnRate - the negative learning rate
-    @param mutateProb - the probaility that a mutation will occur to each vector component
-    @param mutateAmount - the amount by which a vector component will change if it is mutated
-    @param iterations - the number of iterations that this PBIL will run for 
-    @param popSize - the number of individuals that will be generated in each iteration's population 
-*/
-    public PBIL(ClauseList problem, double posLearnRate, double negLearnRate, double mutateProb, double mutateAmount, int iterations, int popSize) {
-    	this.problem = problem;
-    	this.posLearnRate = posLearnRate;
-    	this.negLearnRate = negLearnRate;
-    	this.mutateProb = mutateProb;
-    	this.mutateAmount = mutateAmount;
-    	this.iterations = iterations;
-    	this.popSize = popSize;
-
-    	int variables = problem.getVariableNum();
-    	double[] vec = new double[variables];
-    	Arrays.fill(vec, 0.50);
-    	this.pbilVec = vec;
-
-    	Population pop = new Population(this.popSize);
-    	pop.generateRandomVectorPopulation(problem.getVariableNum(), this.pbilVec);
-    	this.currentPop = pop;
-    }
 }
