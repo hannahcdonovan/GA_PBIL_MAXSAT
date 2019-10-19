@@ -48,14 +48,17 @@ public class GeneticAlgorithm {
     public Population currentPopulation; 
 
     /**
-     * The GeneticAlgorithm constructor. 
-     * @param problem
-     * @param popSize
-     * @param selectionType
-     * @param crossoverType
-     * @param crossoverProb
-     * @param mutationProb
-     * @param iterations
+     * The GeneticAlgorithm constructor. Every time a new GeneticAlgorithm instance is created, it also
+     * generates a random population to start the problem (i.e. the initial population that is updated each
+     * time).
+     * @param problem The ClauseList version of the MAXSAT problem.
+     * @param popSize The number of individuals in the population.
+     * @param selectionType The type of selection - either ts (Tournament Selection), rs (Rank Selection), sg
+     *                      (Selection by Groups).
+     * @param crossoverType The type of crossover - either 1c (One-Point Crossover),  uc (Uniform Crossover).
+     * @param crossoverProb The probabiliity of actually performing the crossover.
+     * @param mutationProb  The probability of swaping each individual bit in the Individual object.
+     * @param iterations    The numbe of iterations to run the algorithm fro.
      */
     public GeneticAlgorithm(ClauseList problem, int popSize, String selectionType, String crossoverType,
                             double crossoverProb, double mutationProb, int iterations) {
@@ -81,6 +84,12 @@ public class GeneticAlgorithm {
                             "\n-------------------------");
     }
 
+    /**
+     * Helper method used to clearly express the type of selection being used when creating 
+     * an instance of GeneticAlgorithm.
+     * @param selectionType The string inputed that indicates the selection type - ts, rs, sg.
+     * @return  More readable string format that indicates the type of selection being used.
+     */
     public String selectionDeducer(String selectionType) {
         String format = "";
         if (selectionType.equals("ts")) {
@@ -93,6 +102,12 @@ public class GeneticAlgorithm {
         return format;
     }
 
+    /**
+     * Helper method used to clearly express the type of crossover being used when creating an
+     * instance of GeneticAlgorithm.
+     * @param crossoverType The String inputed that indicates the selection type - 1c, uc.
+     * @return More readable string format that indicates the type of crossover being used.
+     */
     public String crossOverDeducer(String crossoverType) {
         String format = "";
         if (crossoverType.equals("uc")) {
@@ -103,6 +118,13 @@ public class GeneticAlgorithm {
         return format;
     }
 
+    /**
+     * Helper method for one point crossover. Does the actual 1 point crossover between two parents,
+     * whereas the recombine method performs crossover for all individuals in the population.
+     * @param firstParent The first parent we are looking to combine with the second.
+     * @param secondParent The second parent we are looking to combine with first.
+     * @return List<Individual> A list containing the newly formed children after crossover.
+     */
     public List<Individual> onePointCrossoverHelper(Individual firstParent, Individual secondParent) {
         List<Individual> children = new ArrayList<Individual>();
 
@@ -138,7 +160,12 @@ public class GeneticAlgorithm {
         return children;
     }
 
-
+    /**
+     * Helper method for uniform crossover. Does the actual uniform crossover between two parents,
+     * whereas the recombine method performs crossover for all individuals in the population.
+     * @param firstParent The first parent we want to recombine with the second.
+     * @param secondParent The second paretn that we want to recombine with the first.
+     */
     public List<Individual> uniformCrossoverHelper(Individual firstParent, Individual secondParent) {
         List<Individual> children = new ArrayList<Individual>();
 
@@ -171,7 +198,13 @@ public class GeneticAlgorithm {
 
     }
  
-
+    /**
+     * Using the GeneticAlgorithm's instance of the crossoverProb, which determines whether or
+     * not to actually do the crossover, this method randomly chooses
+     * individuals from the currentPopulation to recombine with using 1c or uc. At the end, the
+     * method also picks the most fit inidivuals from the new population created and adds them to
+     * the new population until it is the same size as the previously population.
+     */
     public void recombine() {
         Population newPop = new Population(this.currentPopulation.size());
 
@@ -221,24 +254,29 @@ public class GeneticAlgorithm {
         this.currentPopulation = newPop;
     }
 
-
+    /**
+     * Method that performs rankSelection. Assigns each individual in the offSpring pool a fitness attribute.
+     * Sorts the offSpring, and adds them to a list based on their "rank" - i.e. individuals with higher rank
+     * appear more times (proportional to their rank). Then, randomly grab indices from this auxillary list and
+     * add to newPopulation list (that is the same size as the offspring list).
+     */
     public void rankSelection() {
 
         List<Individual> offSpring = this.currentPopulation.popList;
 
         for (Individual ind : offSpring) {
-            ind.fitness = ind.getFitness(this.problem);
+            ind.setFitness(this.problem);
         }
 
         Collections.sort(offSpring);
 
-        // int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
-
         List<Individual> indList = new ArrayList<Individual>();
 
-        for(int i = 0; i < offSpring.size(); i++) {
+        // Given that the offspring list is sorted
+        // ranking
+        for (int i = 0; i < offSpring.size(); i++) {
             Individual currentInd = offSpring.get(i);
-            for(int j = 0; j < i + 1; j++) {
+            for (int j = 0; j < i + 1; j++) {
                 indList.add(currentInd);
             }
         }
@@ -255,6 +293,11 @@ public class GeneticAlgorithm {
         this.currentPopulation = newPop;
     }
 
+    /**
+     * Method that performs tournament selection. Does tournament selection for half the offSpring size,
+     * then shuffles the offSpring list and does it again so that we end up with a new population the
+     * same size as the current population.
+     */
     public void tournamentSelection() {
 
         List<Individual> offSpring = this.currentPopulation.popList;
@@ -280,7 +323,11 @@ public class GeneticAlgorithm {
         this.currentPopulation = newPop;
     }
 
-
+    /**
+     * Method that performs selection by groups. Takes half of the current population, calculates the fitness,
+     * and does the same for the other half. Compares the fitness of both halves. For the more fit half, doubles
+     * it and puts it in the newPopulation list.
+     */
     public void selectionByGroups() {
 
         List<Individual> offSpring = this.currentPopulation.popList;
@@ -319,7 +366,10 @@ public class GeneticAlgorithm {
         this.currentPopulation = newPop;
     }
 
-
+    /**
+     * Given the above selection functions, chooses which selection to perform based on the inputted
+     * selection type.
+     */
     public void select() {
         switch (this.selectionType) {
             case "rs":
@@ -338,7 +388,10 @@ public class GeneticAlgorithm {
     }
 
     /**
-     * To be called on an instance of Genetic Algorithms.
+     * Executes the functions of the GeneticAlgorithm. For the specified number of iterations, 
+	 * creates a randomly generated population of individuals, selects them, recombines them,
+     * mutates them, and adjusts the fitness. Afterwards, the algorithm should converge on 
+     * the optimal solution, but not always (contingent upon the parameters used). 
      */
     public void optimize() {
 

@@ -14,3 +14,6 @@ of MAXSAT.
     a. Run the following command `java Main <filename> <populationNum> <positiveLearningRate> <negativeLearningRate> <mutationProb> <mutationAmount> <numIterationrs> p`
     b. An example of this would be `java Main t3pm3-5555.spn.cnf 100 0.1 0.075 0.02 0.05 1000 p`
 
+# Understanding the results
+For either algorithm, the algorithm will print the "best individual" on each iteration. Note that the "best" means
+the number of clauses in the MAXSAT problem that are NOT satisfied. We are trying to minimize the best in this case.
