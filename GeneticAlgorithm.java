@@ -403,14 +403,14 @@ public class GeneticAlgorithm {
         for (int i = 0; i < this.iterations; i++) {
             this.select();
             this.recombine();
-            popBest = this.currentPopulation.findBest(this.problem);
             for(Individual ind : this.currentPopulation.popList) {
                 ind.mutate(this.mutationProb);
                 ind.setFitness(this.problem);
+                popBest = this.currentPopulation.findBest(this.problem);
             }
             if (popBest.getFitness(this.problem) <= this.best.getFitness(this.problem)) {
-                // System.out.println("Pop best " + popBest.getFitness(this.problem));
-                // System.out.println(" Overall best " + this.best.getFitness(this.problem));
+                System.out.println("Pop best " + popBest.getFitness(this.problem));
+                System.out.println(" Overall best " + this.best.getFitness(this.problem));
                 this.best = popBest;
             }
             System.out.println((i + 1) + " BEST IS " + this.best.fitness);
