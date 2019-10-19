@@ -3,28 +3,61 @@ import java.util.Random;
 
 public class PBIL {
 
-	double[] pbilVec;
-	ClauseList problem;
-	int popSize;
-	double posLearnRate;
-	double negLearnRate;
-	double mutateProb;
-	double mutateAmount;
-	int iterations;
-	Population currentPop;
+	/**
+	 * The vector
+	 */
+	public double[] pbilVec;
 
+	/**
+	 * ClauseList storing the information of each clause for the MAXSAT problem.
+	 */
+	public ClauseList problem;
 
-    /*
-    PBIL class represents an instance of the PBIL algorithm with the specific parameters. 
+	/**
+	 * The number of individuals that will be generated on each iteration's population.
+	 */
+	public int popSize;
 
-    @param problem - ClauseList storing the information of each clause for the MAXSAT problem
-    @param posLearnRate - the positive learning rate
-    @param negLearnRate - the negative learning rate
-    @param mutateProb - the probaility that a mutation will occur to each vector component
-    @param mutateAmount - the amount by which a vector component will change if it is mutated
-    @param iterations - the number of iterations that this PBIL will run for 
-    @param popSize - the number of individuals that will be generated in each iteration's population 
-    */
+	/**
+	 * The positive learning rate.
+	 */
+	public double posLearnRate;
+
+	/**
+	 * The negative learning rate.
+	 */
+	public double negLearnRate;
+
+	/**
+	 * The probaility that a mutation will occur to each vector component.
+	 */
+	public double mutateProb;
+
+	/**
+	 * The amount by which a vector component will change if it is mutated.
+	 */
+	public double mutateAmount;
+
+	/**
+	 * The number of iterations that this PBIL will run for.
+	 */
+	public int iterations;
+
+	/**
+	 * The initial population at the start of PBIL.
+	 */
+	public Population currentPop;
+
+	/**
+	 * PBIL class represents an instance of the PBIL algorithm with the specific parameters.
+	 * @param problem ClauseList storing the information of each clause for the MAXSAT problem.
+	 * @param posLearnRate The positive learning rate.
+	 * @param negLearnRate The negative learning rate.
+	 * @param mutateProb The probaility that a mutation will occur to each vector component.
+	 * @param mutateAmount The amount by which a vector component will change if it is mutated.
+	 * @param iterations The number of iterations that this PBIL will run for.
+	 * @param popSize The number of individuals that will be generated on each iteration's population.
+	 */
     public PBIL(ClauseList problem, double posLearnRate, double negLearnRate, double mutateProb, double mutateAmount, int iterations, int popSize) {
         this.problem = problem;
         this.posLearnRate = posLearnRate;
@@ -41,21 +74,29 @@ public class PBIL {
 
         Population pop = new Population(this.popSize);
         pop.generateRandomVectorPopulation(problem.getVariableNum(), this.pbilVec);
-        this.currentPop = pop;
-    }
-
-
-/* 
-    updateVec updates the PBIL vector components towards the best individual and away from the worst individual
-   
-    Using the information of the best and worst individuals, the components of the PBIL vector are modified
-    such that they more closely resemble the best individual and diverge from the worst individual (wherever
-    the worst and best individual do not match)
-
-    @param best - Individual which was identified as the most fit in the population 
-    @param worst - Individual which was indentified as the least fit in the population 
-
-*/
+		this.currentPop = pop;
+		
+		// Prints values out on each instantiation to be used
+		System.out.println("-------------------------" + 
+                            "\nPBIL for MAXSAT \n" + 
+                            "Population Size: " + this.popSize + 
+                            "\nPositive Learning Rate: " + this.posLearnRate + 
+                            "\nNegative Learning Rate " + this.negLearnRate + 
+                            "\nMutation Probability: " + this.mutateProb + 
+                            "\nMutation Amount: " + this.mutateAmount +
+                            "\nNumber of Iterations: " + this.iterations + 
+                            "\n-------------------------");
+	}
+	
+	/**
+	 * Updates the PBIL vector components towards the best individual and away from the worst individual.
+	 * 
+	 * Using the information of the best and worst individuals, the components of the PBIL vector are modified
+	 * such that they more closely resemble the best individual and diverge from the worst individual (wherever
+	 * the worst and best individual do not match).
+	 * @param best Individual which was identified as the most fit in the population.
+	 * @param worst Individual which was indentified as the least fit in the population.
+	 */
     public void updateVec(Individual best, Individual worst) {
 
     	for(int i = 1; i < best.individual.length; i++) {
@@ -73,15 +114,12 @@ public class PBIL {
     	}
     }
 
-
-
-/*
-    mutate() possibly changes the PBIL vector 
-    According to the mutation probabilty, each component of the vector may be changed by adding or 
-    subtracting the predetermined mutation amount. This change, however, will never allow the vector 
-    component to be less than 0 or more than 1. 
-
-*/
+	/**
+	 * Changes the PBIL vector — possibly. Depends on the mutateProb.
+	 * According to the mutation probabilty, each component of the vector may be changed by adding or 
+	 * subtracting the predetermined mutation amount. This change, however, will never allow the vector 
+	 * component to be less than 0 or more than 1.
+	 */
     public void mutate() {
     	Random generator = new Random();
     	int cutoff = (int) Math.round(100 * this.mutateProb);
@@ -97,13 +135,13 @@ public class PBIL {
     	}
     }
 
-/*  
-    findBestWorst() calculates the fitness of each Individual in the population and identifies the 
-    individual with the highest fitness and the individual with the lowest fitness. If several individuals
-    in the population have the highest/lowest fitnesses, just one is returned. 
-
-    @return Individual[] with the best Individual at index 0 and the worst Individual at index 1
-*/
+	/**
+	 * Calculates the fitness of each Individual in the population and identifies the 
+	 * individual with the highest fitness and the individual with the lowest fitness. If several individuals
+	 * in the population have the highest/lowest fitnesses, just one is returned.
+	 * @return An array of individuals (Individual[]) containing the best individual at the 0 index
+	 * 	and worst individual at the 1 index.
+	 */
     public Individual[] findBestWorst() {
     	Individual bestInd = this.currentPop.popList.get(0);
     	Individual worstInd = this.currentPop.popList.get(0);
@@ -124,15 +162,14 @@ public class PBIL {
     	}
     	Individual[] results = new Individual[]{bestInd, worstInd};
     	return results;
-    }
-
-/*
-    optimize() executes the functions of the PBIL algorithm. For the specified number of iterations, 
-    a population is created according to the specifications of the probaility vector, the best/worst 
-    Individuals are identified, the probaility vector is adjusted according to these two individuals, 
-    and the process is repeated. Afterwards, the algorithm should converge on the optimal solution. 
-
-*/
+	}
+	
+	/**
+	 * Executes the functions of the PBIL algorithm. For the specified number of iterations, 
+	 * a population is created according to the specifications of the probaility vector, the best/worst 
+	 * Individuals are identified, the probaility vector is adjusted according to these two individuals, 
+	 * and the process is repeated. Afterwards, the algorithm should converge on the optimal solution. 
+	 */
     public void optimize() {
 
     	for(int i = 0; i < this.iterations; i ++) {
@@ -146,20 +183,8 @@ public class PBIL {
     	for(int i = 1; i <= this.problem.getVariableNum(); i++) {
     		int num = (int) Math.round(this.pbilVec[i-1]);
     		suggestedBest.setValue(i, num);
-    	}
-    	System.out.println("Suggests the best is " + suggestedBest.getFitness(this.problem) + ": " + suggestedBest);
-    }
-
-
-    public static String vecToString(double[] vec) {
-    	String result = "";
-
-    	for(int i = 0; i < vec.length; i++) {
-    		result += vec[i];
-    		result += " ";
-    	}
-    	return result;
-    }
-
-
+		}
+		int suggestedBestFit = suggestedBest.getFitness(this.problem);
+		System.out.println("Suggests the best is " + suggestedBestFit + ": " + suggestedBest);
+	}
 }

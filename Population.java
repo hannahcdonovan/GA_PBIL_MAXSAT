@@ -4,16 +4,34 @@ import java.util.Random;
 
 public class Population {
 
+    /**
+     * List of Individual objects representing the total population.
+     */
     public List<Individual> popList;
+
+    /**
+     * The number of individuals in the population.
+     */
     public int populationNum;
     
+    /**
+     * Constructor for the Population object. Object that is a list of Individuals. Maintained in both
+     * PBIL and Genetic Algorithms.
+     * @param populationNum The number of individuals in the given population.
+     */
     public Population(int populationNum) {
         this.populationNum = populationNum;
         popList = new ArrayList<Individual>();
     }
 
     //populates list with Individuals randmly
-    //called to start GA 
+    //called to start GA
+    /**
+     * Randomly (i.e. with 0.5 probability) populates the popList attribute of Population object with random
+     * individuals.
+     * @param int variableNum The number of variables in the MAXSAT problem. Pertains to how we construct the
+     *  indiviuals.
+     */
     public void generateRandomPopulation(int variableNum) {
         Individual individual = new Individual(variableNum);
         for (int i = 0; i < this.populationNum; i++) {
@@ -22,24 +40,45 @@ public class Population {
         //return this;
     }
 
+    /**
+     * Given an individual, adds an individual to the Population's ArrayList.
+     * @param Individual ind The Individual that we want to add to the Population.
+     */
     public void addIndividual(Individual ind) {
         popList.add(ind);
     }
 
+    /**
+     * Returns the Population's popList attribute.
+     * @return
+     */
     public List<Individual> getPopulationList() {
         return popList;
     }
 
+    /**
+     * Given an index, returns an individual from the Population's popList.
+     * @param int index The index of the popList that we want to get out.
+     */
     public Individual getIndividual(int index) {
         return popList.get(index);
     }
 
+    /**
+     * Get the size of the populationList currently.
+     * @return The size of the populationList.
+     */
     public int size() {
         return popList.size();
     }
 
-    //popualtes list of Inviduals according to pbil vector probabilties 
-    //called for each pbil iteration
+    /**
+     * Populates list of Individuals according to the PBIL vector probabilities. Called for each
+     * PBIL iteration.
+     * @param variables The number of variables in the MAXSAT problem.
+     * @param pbilVec The PBIL vector that determines how the random population is created. Initially all 0.5
+     *  in value.
+     */
     public void generateRandomVectorPopulation(int variables, double[] pbilVec) {
 
     	this.popList.clear();
@@ -60,6 +99,33 @@ public class Population {
     	}
     }
 
+    /**
+     * Finds the best individual from the population.
+     * @param ClauseList problem The ClauseList object representing the MAXSAT problem to be solved.
+     * @return The "best" individual from the population - i.e. the one with the highest fitness, which is
+     *  represented by the number of clauses NOT solved.
+     */
+	public Individual findBest(ClauseList problem) {
+        Individual best = popList.get(0);
+        int min = best.getFitness(problem);
+        best.setFitness(problem);
+
+        for (int i = 1; i < popList.size(); i++) {
+            Individual currentInd = popList.get(i);
+            int fitness = currentInd.getFitness(problem);
+            if (fitness < min) {
+                best = currentInd;
+                best.setFitness(problem);
+                min = fitness;
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Returns a string representation of the Population object.
+     * @return String representation of the Population object.
+     */
     public String toString() {
     	String result = "";
     	for(int i = 0; i < popList.size(); i++) {
@@ -70,11 +136,4 @@ public class Population {
     	return result;
     }
 
-	public static void main(String[] args) {
-        Population pop = new Population(10);
-        double[] vec = new double[]{0.5, 0.5, 0.5, 0.5};
-        pop.generateRandomVectorPopulation(4, vec);
-        System.out.println(pop);
-
-    }
 }

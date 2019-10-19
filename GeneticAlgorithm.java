@@ -7,15 +7,56 @@ import java.util.Collections;
 
 public class GeneticAlgorithm {
 
-    ClauseList problem;
-    int popSize;
-    String selectionType;
-    String crossoverType;
-	double crossoverProb;
-    double mutationProb;
-    int iterations;
-    Population currentPopulation; 
+    /**
+     * The ClauseList object representing the MAXSAT problem we are trying to solve.
+     */
+    public ClauseList problem;
 
+    /**
+     * The population size.
+     */
+    public int popSize;
+
+    /**
+     * The selection type - ts, rs, sg.
+     */
+    public String selectionType;
+
+    /**
+     * The crossover type - 1c, uc.
+     */
+    public String crossoverType;
+    
+    /**
+     * The probability of actually performing the crossover - whether 1c or uc.
+     */
+    public double crossoverProb;
+    
+    /**
+     * The probability of mutating each value in the individual.
+     */
+    public double mutationProb;
+
+    /**
+     * The number of iterations.
+     */
+    public int iterations;
+
+    /**
+     * The current population.
+     */
+    public Population currentPopulation; 
+
+    /**
+     * The GeneticAlgorithm constructor. 
+     * @param problem
+     * @param popSize
+     * @param selectionType
+     * @param crossoverType
+     * @param crossoverProb
+     * @param mutationProb
+     * @param iterations
+     */
     public GeneticAlgorithm(ClauseList problem, int popSize, String selectionType, String crossoverType,
                             double crossoverProb, double mutationProb, int iterations) {
         this.problem = problem;
@@ -29,9 +70,38 @@ public class GeneticAlgorithm {
         Population newPop = new Population(this.popSize);
         newPop.generateRandomPopulation(this.problem.getVariableNum());
         this.currentPopulation = newPop;
-        System.out.println(this.currentPopulation);
+        System.out.println("-------------------------" + 
+                            "\nGenetic Algorithm for MAXSAT \n" + 
+                            "Population Size: " + this.popSize + 
+                            "\nSelection Type: " + selectionDeducer(this.selectionType) + 
+                            "\nCrossover Type: " + crossOverDeducer(this.crossoverType) + 
+                            "\nCrossover Probability: " + this.crossoverProb + 
+                            "\nMutation Probability: " + this.mutationProb +
+                            "\nNumber of Iterations: " + this.iterations + 
+                            "\n-------------------------");
     }
 
+    public String selectionDeducer(String selectionType) {
+        String format = "";
+        if (selectionType.equals("ts")) {
+            format = "Tournament Selection";
+        } else if (selectionType.equals("rs")) {
+            format = "Rank Selection";
+        } else {
+            format = "Selection By Groups";
+        }
+        return format;
+    }
+
+    public String crossOverDeducer(String crossoverType) {
+        String format = "";
+        if (crossoverType.equals("uc")) {
+            format = "Uniform Crossover";
+        } else if (crossoverType.equals("1c")) {
+            format = "One-Point Crossover";
+        }
+        return format;
+    }
 
     public List<Individual> onePointCrossoverHelper(Individual firstParent, Individual secondParent) {
         List<Individual> children = new ArrayList<Individual>();
@@ -139,7 +209,7 @@ public class GeneticAlgorithm {
             int difference = this.currentPopulation.size() - newPop.size();
 
             for(Individual ind: this.currentPopulation.getPopulationList()) {
-                int fitness = ind.getFitness(this.problem);
+                ind.setFitness(this.problem);
             }
 
             Collections.reverse(this.currentPopulation.popList);
@@ -157,12 +227,12 @@ public class GeneticAlgorithm {
         List<Individual> offSpring = this.currentPopulation.popList;
 
         for (Individual ind : offSpring) {
-            int fitness = ind.getFitness(this.problem);
+            ind.fitness = ind.getFitness(this.problem);
         }
 
         Collections.sort(offSpring);
 
-        int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
+        // int totalSum = (offSpring.size() * (offSpring.size() + 1)) / 2;
 
         List<Individual> indList = new ArrayList<Individual>();
 
@@ -184,8 +254,6 @@ public class GeneticAlgorithm {
         newPop.popList = newPopList;
         this.currentPopulation = newPop;
     }
-
-
 
     public void tournamentSelection() {
 
@@ -255,38 +323,18 @@ public class GeneticAlgorithm {
     public void select() {
         switch (this.selectionType) {
             case "rs":
-                System.out.println("Rank Selection");
                 rankSelection();
                 break;
             case "ts":
-                System.out.println("Tournament Selection");
                 tournamentSelection();
                 break;
             case "sbg":
-                System.out.println("Selection By Groups");
                 selectionByGroups();
                 break;
             default:
                 System.out.println("This selection type is not available.");
-                //Population defaultPop = new Population(0);
-                //return defaultPop;
                 break;
         }
-    }
-
-    public Individual findBest() {
-        Individual best = this.currentPopulation.popList.get(0);
-        int min = best.getFitness(this.problem);
-
-        for(int i = 1; i < this.currentPopulation.size(); i++) {
-            Individual currentInd = this.currentPopulation.popList.get(i);
-            int fitness = currentInd.getFitness(this.problem);
-            if(fitness < min) {
-                best = currentInd;
-                min = fitness;
-            }
-        }
-        return best;
     }
 
     /**
@@ -299,38 +347,13 @@ public class GeneticAlgorithm {
             this.recombine();
             for(Individual ind : this.currentPopulation.popList) {
                 ind.mutate(this.mutationProb);
-                int fitness = ind.getFitness(this.problem);
-                System.out.println(ind + " -> " + fitness);
-            }
-            System.out.println(this.currentPopulation.size());
-            System.out.println("_______________");
+                ind.setFitness(this.problem);
+            } 
+            Individual best = this.currentPopulation.findBest(this.problem);
+            System.out.println((i + 1) + " BEST IS " + best.fitness);
         }
-        Individual best = this.findBest();
-        System.out.println(best + " - " + best.getFitness(this.problem));
-    }
-
-    public static void main(String[] args) {
-        Population pop = new Population(6);
-        pop.generateRandomPopulation(4);
-
-        Clause c1 = new Clause("1 0");
-        Clause c2 = new Clause("2 0");
-        Clause c3 = new Clause("3 0");
-        Clause c4 = new Clause("4 0");
-
-        List<Clause> clauseList = new ArrayList<Clause>();
-        clauseList.add(c1);
-        clauseList.add(c2);
-        clauseList.add(c3);
-        clauseList.add(c4);
-
-        ClauseList cl = new ClauseList(clauseList, 4, 4);
-
-        GeneticAlgorithm ga = new GeneticAlgorithm(cl, 20, "rs", "uc", 0.7, 0.01, 3);
-        //Population newPop = ga.select(pop);
-        //System.out.println("___________");
-        ga.optimize();
-
-
+        Individual finalBest = this.currentPopulation.findBest(this.problem);
+        
+        System.out.println("Suggested best is " + finalBest.fitness + ": " + finalBest);
     }
 }

@@ -8,6 +8,12 @@ import java.util.List;
 
 public class Main {
 
+    /**
+     * Method for reading in a string filename from a user via the command line.
+     * @param String filename The filename passed in by the user from the command line.
+     * @return ClauseList containing problem information - i.e. the clauses and number of variables. Used
+     *         to instantiate our GA and PBIL algorithms.
+     */
     public static ClauseList readFile(String filename) {
         String clauseLine = null;
         Clause clause;
@@ -44,30 +50,18 @@ public class Main {
         }
 
         ClauseList clausePackage = new ClauseList(clauseList, totalClauses, variables);
-        //Individual individual = new Individual(clausePackage.getVariableNum());
-        //Population populationInstance = new Population(50);
-
-        // System.out.println("Individual size " + individual.size());
-        // System.out.println("Individual " + individual.generateIndividual());
-        // System.out.println(clausePackage.toString());
-
-        //Population population = populationInstance.generateRandomPopulation(clausePackage.getVariableNum());
-        //System.out.println(population.getPopulationList());
-
-/*
-        for (int i=0; i < population.size(); i++) {
-                population.getIndividual(i).mutate(0.5);
-        }
-        */
 
         return clausePackage;
 
     }
-
+    /**
+     * Main method to run a Genetic Algorithm and PBIL algorithm.
+     * @param String[] args Command line arguments for running the program. See the read me to understand
+     *                      how to run both PBIL and Genetic Algorithm for MAXSAT.
+     */
     public static void main(String[] args) {
         String filename = args[0];
         ClauseList clausePackage = readFile(filename);
-        System.out.println(args[7]);
 
         if (args[7].equals("p")) {
             int numIndividuals = Integer.parseInt(args[1]);
@@ -88,7 +82,9 @@ public class Main {
             Double mutationProb = Double.parseDouble(args[5]);
             int iterations = Integer.parseInt(args[6]);
 
-            //do whatever is necessary to run Genetic Algorithm with these parameters
+            GeneticAlgorithm ga = new GeneticAlgorithm(clausePackage, numIndividuals, selectionType, crossoverType, 
+                                                        crossoverProb, mutationProb, iterations);
+            ga.optimize();
 
         } else {
             System.out.println("Some error happened with the command line");
