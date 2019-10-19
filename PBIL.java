@@ -176,14 +176,18 @@ public class PBIL {
     public void optimize() {
 
 		this.best = this.findBestWorst()[0];
+        this.best.setFitness(this.problem);
     	for(int i = 0; i < this.iterations; i ++) {
 			Individual[] results = this.findBestWorst();
 			if (results[0].getFitness(this.problem) < this.best.getFitness(this.problem)) {
 				this.best = results[0];
 				this.updateVec(results[0], results[1]);
+                this.best.setFitness(this.problem);
 			} else {
 				this.updateVec(this.best, results[1]);
 			}
+            System.out.println((i + 1) + " BEST IS " + this.best.fitness);
+
     		this.mutate();
     		// System.out.println((i + 1) + " BEST IS 	" + results[0].getFitness(this.problem));
     		this.currentPop.generateRandomVectorPopulation(this.problem.getVariableNum(), this.pbilVec);

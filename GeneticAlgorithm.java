@@ -47,8 +47,6 @@ public class GeneticAlgorithm {
      */
     public Population currentPopulation; 
 
-    public Individual best;
-
     /**
      * The GeneticAlgorithm constructor. Every time a new GeneticAlgorithm instance is created, it also
      * generates a random population to start the problem (i.e. the initial population that is updated each
@@ -71,7 +69,6 @@ public class GeneticAlgorithm {
         this.crossoverProb = crossoverProb;
         this.mutationProb = mutationProb;
         this.iterations = iterations;
-        best = new Individual(this.problem.getVariableNum());
 
         Population newPop = new Population(this.popSize);
         newPop.generateRandomPopulation(this.problem.getVariableNum());
@@ -391,6 +388,35 @@ public class GeneticAlgorithm {
     }
 
     /**
+     * Pulls the solution information from an individual and returns it in the form of an 
+     * List of integers
+     */
+    public static List<Integer> grabInfo(Individual ind) {
+        int[] arr = ind.individual;
+        List<Integer> result = new ArrayList<Integer>();
+
+        for(int i = 1; i < arr.length; i++) {
+            result.add(arr[i]);
+        }
+        return result;
+
+    }
+
+    /**
+     * Takes a List of integers representing the solution of an Individual and creates an 
+     * Individual according to this information. 
+     */
+    public static Individual makeInd(List<Integer> arr, int size) {
+        int[] info = new int[size + 1];
+        Individual result = new Individual(size);
+        for(int i = 0; i < arr.size(); i++) {
+            info[i + 1] = arr.get(i);
+        }
+        result.individual = info;
+        return result;
+    }
+
+    /**
      * Executes the functions of the GeneticAlgorithm. For the specified number of iterations, 
 	 * creates a randomly generated population of individuals, selects them, recombines them,
      * mutates them, and adjusts the fitness. Afterwards, the algorithm should converge on 
@@ -399,23 +425,32 @@ public class GeneticAlgorithm {
     public void optimize() {
 
         Individual popBest = new Individual(this.problem.getVariableNum());
-        this.best = this.currentPopulation.findBest(this.problem);
+
+        Individual best = this.currentPopulation.findBest(this.problem);
+        List<Integer> bestSol = grabInfo(best);
+        int bestFitness = best.fitness;
+
         for (int i = 0; i < this.iterations; i++) {
             this.select();
             this.recombine();
             for(Individual ind : this.currentPopulation.popList) {
                 ind.mutate(this.mutationProb);
                 ind.setFitness(this.problem);
-                popBest = this.currentPopulation.findBest(this.problem);
             }
-            if (popBest.getFitness(this.problem) <= this.best.getFitness(this.problem)) {
-                System.out.println("Pop best " + popBest.getFitness(this.problem));
-                System.out.println(" Overall best " + this.best.getFitness(this.problem));
-                this.best = popBest;
+
+            popBest = this.currentPopulation.findBest(this.problem);
+            popBest.setFitness(this.problem);
+
+            if (popBest.fitness < bestFitness) {
+                best = popBest;
+                bestSol = grabInfo(popBest);
+                bestFitness = popBest.fitness;
             }
-            System.out.println((i + 1) + " BEST IS " + this.best.fitness);
+            System.out.println((i + 1) + " BEST IS " + bestFitness);
         }
+
+        Individual result = makeInd(bestSol, this.problem.getVariableNum());
         
-        System.out.println("Suggested best is " + this.best.fitness + ": " + this.best);
+        System.out.println("Solution is " + result.getFitness(this.problem) + ": " + result);
     }
 }
