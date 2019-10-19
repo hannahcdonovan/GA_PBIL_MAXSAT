@@ -47,6 +47,8 @@ public class GeneticAlgorithm {
      */
     public Population currentPopulation; 
 
+    public Individual best;
+
     /**
      * The GeneticAlgorithm constructor. Every time a new GeneticAlgorithm instance is created, it also
      * generates a random population to start the problem (i.e. the initial population that is updated each
@@ -69,6 +71,7 @@ public class GeneticAlgorithm {
         this.crossoverProb = crossoverProb;
         this.mutationProb = mutationProb;
         this.iterations = iterations;
+        best = new Individual(this.problem.getVariableNum());
 
         Population newPop = new Population(this.popSize);
         newPop.generateRandomPopulation(this.problem.getVariableNum());
@@ -395,18 +398,24 @@ public class GeneticAlgorithm {
      */
     public void optimize() {
 
+        Individual popBest = new Individual(this.problem.getVariableNum());
+        this.best = this.currentPopulation.findBest(this.problem);
         for (int i = 0; i < this.iterations; i++) {
             this.select();
             this.recombine();
+            popBest = this.currentPopulation.findBest(this.problem);
             for(Individual ind : this.currentPopulation.popList) {
                 ind.mutate(this.mutationProb);
                 ind.setFitness(this.problem);
-            } 
-            Individual best = this.currentPopulation.findBest(this.problem);
-            System.out.println((i + 1) + " BEST IS " + best.fitness);
+            }
+            if (popBest.getFitness(this.problem) <= this.best.getFitness(this.problem)) {
+                // System.out.println("Pop best " + popBest.getFitness(this.problem));
+                // System.out.println(" Overall best " + this.best.getFitness(this.problem));
+                this.best = popBest;
+            }
+            System.out.println((i + 1) + " BEST IS " + this.best.fitness);
         }
-        Individual finalBest = this.currentPopulation.findBest(this.problem);
         
-        System.out.println("Suggested best is " + finalBest.fitness + ": " + finalBest);
+        System.out.println("Suggested best is " + this.best.fitness + ": " + this.best);
     }
 }

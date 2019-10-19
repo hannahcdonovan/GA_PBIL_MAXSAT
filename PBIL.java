@@ -48,6 +48,8 @@ public class PBIL {
 	 */
 	public Population currentPop;
 
+	public Individual best;
+
 	/**
 	 * PBIL class represents an instance of the PBIL algorithm with the specific parameters.
 	 * @param problem ClauseList storing the information of each clause for the MAXSAT problem.
@@ -65,9 +67,10 @@ public class PBIL {
         this.mutateProb = mutateProb;
         this.mutateAmount = mutateAmount;
         this.iterations = iterations;
-        this.popSize = popSize;
+		this.popSize = popSize;
 
-        int variables = problem.getVariableNum();
+		int variables = problem.getVariableNum();
+		best = new Individual(variables);
         double[] vec = new double[variables];
         Arrays.fill(vec, 0.50);
         this.pbilVec = vec;
@@ -172,19 +175,25 @@ public class PBIL {
 	 */
     public void optimize() {
 
+		this.best = this.findBestWorst()[0];
     	for(int i = 0; i < this.iterations; i ++) {
-    		Individual[] results = this.findBestWorst();
-    		this.updateVec(results[0], results[1]);
+			Individual[] results = this.findBestWorst();
+			if (results[0].getFitness(this.problem) < this.best.getFitness(this.problem)) {
+				this.best = results[0];
+				this.updateVec(results[0], results[1]);
+			} else {
+				this.updateVec(this.best, results[1]);
+			}
     		this.mutate();
-    		System.out.println((i + 1) + " BEST IS 	" + results[0].getFitness(this.problem));
+    		// System.out.println((i + 1) + " BEST IS 	" + results[0].getFitness(this.problem));
     		this.currentPop.generateRandomVectorPopulation(this.problem.getVariableNum(), this.pbilVec);
     	}
-    	Individual suggestedBest = new Individual(this.problem.getVariableNum());
+    	// Individual suggestedBest = new Individual(this.problem.getVariableNum());
     	for(int i = 1; i <= this.problem.getVariableNum(); i++) {
     		int num = (int) Math.round(this.pbilVec[i-1]);
-    		suggestedBest.setValue(i, num);
+    		this.best.setValue(i, num);
 		}
-		int suggestedBestFit = suggestedBest.getFitness(this.problem);
-		System.out.println("Suggests the best is " + suggestedBestFit + ": " + suggestedBest);
+		int suggestedBestFit = this.best.getFitness(this.problem);
+		System.out.println("Suggests the best is " + suggestedBestFit + ": " + this.best);
 	}
 }
