@@ -446,11 +446,11 @@ public class GeneticAlgorithm {
                 bestSol = grabInfo(popBest);
                 bestFitness = popBest.fitness;
             }
-            System.out.println((i + 1) + " BEST IS " + bestFitness);
+            //System.out.println((i + 1) + " BEST IS " + bestFitness);
         }
 
         Individual result = makeInd(bestSol, this.problem.getVariableNum());
         
-        System.out.println("Solution is " + result.getFitness(this.problem) + ": " + result);
+        //System.out.println("Solution is " + result.getFitness(this.problem) + ": " + result);
     }
 }

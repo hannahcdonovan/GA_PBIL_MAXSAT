@@ -186,7 +186,7 @@ public class PBIL {
 			} else {
 				this.updateVec(this.best, results[1]);
 			}
-            System.out.println((i + 1) + " BEST IS " + this.best.fitness);
+            //System.out.println((i + 1) + " BEST IS " + this.best.fitness);
 
     		this.mutate();
     		// System.out.println((i + 1) + " BEST IS 	" + results[0].getFitness(this.problem));
