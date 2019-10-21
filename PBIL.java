@@ -186,13 +186,12 @@ public class PBIL {
 			} else {
 				this.updateVec(this.best, results[1]);
 			}
-            //System.out.println((i + 1) + " BEST IS " + this.best.fitness);
+            System.out.println((i + 1) + " BEST IS " + this.best.fitness);
 
     		this.mutate();
     		// System.out.println((i + 1) + " BEST IS 	" + results[0].getFitness(this.problem));
     		this.currentPop.generateRandomVectorPopulation(this.problem.getVariableNum(), this.pbilVec);
     	}
-    	// Individual suggestedBest = new Individual(this.problem.getVariableNum());
     	for(int i = 1; i <= this.problem.getVariableNum(); i++) {
     		int num = (int) Math.round(this.pbilVec[i-1]);
     		this.best.setValue(i, num);
