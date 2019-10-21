@@ -2,44 +2,59 @@ import java.lang.*;
 
 public class Test {
 
-    private static int TESTNUM = 10;
+    private static double TESTNUM = 100;
     public static void main(String[] args) {
 
         ClauseList problem = Main.readFile("t5pm3-7777.spn.cnf");
 
         //how many clauses in the file?
-        int clauses = 750;
+        double clauses = 750.0;
         //best solution from website
-        int soln = 78;
+        double soln = 78.0;
 
         int popSize = 100; // population size for GA, number of samples for PBIL
-        int iterations = 100;
+        int iterations = 50;
 
         String selectionType = "ts";
-        String crossoverType = "1c";
+        String[] crossoverTypes = {"1c", "uc"};
 
-        double probCross = 0.7;
-        double[] probMutate = {0.0, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0};
+        double probCross = 0.60;
+        double probMutate = 0.01;
+
+        int[] iterationsL = {100};
+        //int[] popSizes = { 50, 100, 500, 1000, 2000 };
+
+
+        double negLR = 0.075;
+        double posLR = 0.1;
+
+        double probMut = 0.01;
+
+        double mutationAmount = 0.05;
+
+
 
         //Perform test for GA on the first file (TESTNUM times)
-        for(double probMut : probMutate) {
-            //System.out.println("Probability of mutation = " + probMut);
-            GeneticAlgorithm ga = new GeneticAlgorithm(problem, popSize , selectionType, crossoverType, probCross, probMut, iterations);
+        for(String crossoverType : crossoverTypes) {
 
-            int totalBestsGA = 0;
+            //System.out.println("Probability of mutation = " + probMut);
+            GeneticAlgorithm ga = new GeneticAlgorithm(problem, popSize , selectionType, crossoverType, probCross, probMutate, iterations);
+
+            double totalBestsGA = 0;
             int i = 0;
             long startTime = System.currentTimeMillis();
             while (i < TESTNUM) {
                 ga.optimize();
                 //Let's say a "good" result is at least 90% of the best possible
-                if (clauses - ga.currentPopulation.findBest(problem).getFitness(problem) >= 0.90*(clauses - soln)) {
+                //System.out.println(ga.bestOverallFitness);
+                if (clauses - ga.bestOverallFitness >= 0.90*(clauses - soln)) {
                     totalBestsGA += 1;
                 }
                 i++;
             }
 
             long totalTime = System.currentTimeMillis() - startTime;
-            double successRateGA = totalBestsGA/TESTNUM;
+            double successRateGA =  totalBestsGA / TESTNUM;
             System.out.println("The success rate for Genetic Algorithm given these params is " + successRateGA);
             System.out.println("And it took " + totalTime + "ms to run " + TESTNUM + " tests");
 

@@ -80,15 +80,15 @@ public class PBIL {
 		this.currentPop = pop;
 		
 		// Prints values out on each instantiation to be used
-		System.out.println("-------------------------" + 
-                            "\nPBIL for MAXSAT \n" + 
-                            "Population Size: " + this.popSize + 
-                            "\nPositive Learning Rate: " + this.posLearnRate + 
-                            "\nNegative Learning Rate " + this.negLearnRate + 
-                            "\nMutation Probability: " + this.mutateProb + 
-                            "\nMutation Amount: " + this.mutateAmount +
-                            "\nNumber of Iterations: " + this.iterations + 
-                            "\n-------------------------");
+		//System.out.println("-------------------------" +
+        //                    "\nPBIL for MAXSAT \n" +
+        //                    "Population Size: " + this.popSize +
+        //                    "\nPositive Learning Rate: " + this.posLearnRate +
+        //                    "\nNegative Learning Rate " + this.negLearnRate +
+        //                    "\nMutation Probability: " + this.mutateProb +
+        //                    "\nMutation Amount: " + this.mutateAmount +
+        //                    "\nNumber of Iterations: " + this.iterations +
+        //                    "\n-------------------------");
 	}
 	
 	/**
@@ -198,6 +198,6 @@ public class PBIL {
     		this.best.setValue(i, num);
 		}
 		int suggestedBestFit = this.best.getFitness(this.problem);
-		System.out.println("Suggests the best is " + suggestedBestFit + ": " + this.best);
+		//System.out.println("Suggests the best is " + suggestedBestFit + ": " + this.best);
 	}
 }
