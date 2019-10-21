@@ -110,6 +110,8 @@ public class Population {
         int min = best.getFitness(problem);
         best.setFitness(problem);
 
+//        System.out.println("the current best is: " + best.getFitness(problem));
+
         for (int i = 1; i < popList.size(); i++) {
             Individual currentInd = popList.get(i);
             int fitness = currentInd.getFitness(problem);
@@ -119,6 +121,7 @@ public class Population {
                 min = fitness;
             }
         }
+//        System.out.println("the new best is " + best.getFitness(problem));
         return best;
     }
 

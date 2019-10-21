@@ -45,7 +45,13 @@ public class GeneticAlgorithm {
     /**
      * The current population.
      */
-    public Population currentPopulation; 
+    public Population currentPopulation;
+
+    /**
+     * The best fitness we find after optimize
+     */
+
+    public int bestOverallFitness;
 
     /**
      * The GeneticAlgorithm constructor. Every time a new GeneticAlgorithm instance is created, it also
@@ -433,7 +439,7 @@ public class GeneticAlgorithm {
         for (int i = 0; i < this.iterations; i++) {
             this.select();
             this.recombine();
-            for(Individual ind : this.currentPopulation.popList) {
+            for (Individual ind : this.currentPopulation.popList) {
                 ind.mutate(this.mutationProb);
                 ind.setFitness(this.problem);
             }
@@ -452,5 +458,8 @@ public class GeneticAlgorithm {
         Individual result = makeInd(bestSol, this.problem.getVariableNum());
         
         System.out.println("Suggests the best is " + result.getFitness(this.problem) + ": " + result);
+        //this.bestOverallFitness = result.getFitness(this.problem);
+        //System.out.println("Solution is " + result.getFitness(this.problem) + ": " + result);
     }
+
 }

@@ -91,12 +91,16 @@ public class Individual implements Comparable<Individual> {
     /**
      * Returns the number of clauses that the individual does not satisfy  (which is the answer to the
      * problem we are seeking to find).
-     * @param ClauseList problem The MAXSAT problem at hand in the form of an object - contains relevant info 
+     * @param ClauseList problem The MAXSAT problem at hand in the form of an object - contains relevant info
      *                   (see ClauseList.java).   
      * @return int An integer representing the number of clauses that are NOT satisfied by the particular
      *             Individual object (MAXSAT is looking to minimize this).
      */
     public int getFitness(ClauseList problem) {
+
+        if (this.fitness != -1 ) {
+            return this.fitness;
+        }
 
         int notSatisfied = 0;
 
